@@ -226,6 +226,7 @@ class Origami_generator extends CI_Controller {
                 }
             }
             
+            $this->_append("\r\n");
             $this->_append("\tpublic static \$table = '{$table['Name']}';\r\n");
             $this->_append("\r\n");
 
@@ -411,7 +412,7 @@ class Origami_generator extends CI_Controller {
                 $this->_append($relations_buffer);
             }
                         
-            $file_name = $table['Name'].'_entity.php';
+            $file_name = $table['Name'].'.php';
 
             // Si il exite un override
             if (!empty($this->override[$file_name])) {
