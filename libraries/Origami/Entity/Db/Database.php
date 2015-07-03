@@ -121,9 +121,9 @@ class Database
     public function close()
     {
         // Si la connexion existe
-        if (!$this->hasDb()) {
+        if (!$this->isConnect()) {
             // Ferme la connexion
-            $this->getDb()->close();
+            $this->db()->close();
         }
     }
 
