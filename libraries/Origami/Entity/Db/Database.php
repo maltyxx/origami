@@ -46,7 +46,7 @@ class Database
     private function initialize(\Origami\Entity\Config &$config)
     {
         // Instance de CodeIgniter
-        $this->CI = & get_instance();
+        $this->CI =& get_instance();
 
         // Nom de la base de donnée
         $this->setName($config);
@@ -91,7 +91,7 @@ class Database
      */
     public function setGroup(\Origami\Entity\Config &$config)
     {
-        $this->group = 'db_'.$config->getDataBase();
+        $this->group = "db_{$config->getDataBase()}";
     }
 
     /**
@@ -101,17 +101,17 @@ class Database
     public function connect(\Origami\Entity\Config &$config)
     {
         // Si la connexion existe
-        if (!$this->hasDb()) {
+        if (!$this->isConnect()) {
             // Charge la librairie DB
-            $this->setDb($this->CI->load->database($this->getName(), TRUE));
+            $this->set($this->CI->load->database($this->getName(), TRUE));
 
             // Connexion à la base de donnée
-            $this->getDb()->initialize();
-
-            // Si le cryptage est actif charge les éléments indispensable au cryptage
-            if ($config->getOrigami('encryption_enable') === TRUE) {
-                $this->getDb()->query("SET @@session.block_encryption_mode = 'aes-256-cbc';");
-            }
+            $this->db()->initialize();
+        }
+        
+        // Si le cryptage est actif charge les éléments indispensable au cryptage
+        if ($config->getOrigami('encryption_enable') === TRUE) {
+            $this->db()->query("SET @@session.block_encryption_mode = 'aes-256-cbc';");
         }
     }
 
@@ -135,32 +135,23 @@ class Database
     {
         return $this->CI->{$this->getGroup()};
     }
-
+    
     /**
-     * Retourne l'object connexion
-     * @return object
+     * Si l'object connexion exist
+     * @return boolean
      */
-    private function getDb()
+    public function isConnect()
     {
-        return $this->db();
+        return isset($this->CI->{$this->getGroup()});
     }
 
     /**
      * Modifie l'object connexion
      * @return object
      */
-    private function setDb($driver)
+    private function set($driver)
     {
         $this->CI->{$this->getGroup()} = $driver;
-    }
-
-    /**
-     * Si l'object connexion exist
-     * @return boolean
-     */
-    private function hasDb()
-    {
-        return isset($this->CI->{$this->getGroup()});
     }
 
 }
