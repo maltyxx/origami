@@ -28,16 +28,7 @@ class Storage
      * Constructeur
      * @param \Origami\Entity\Config $config
      */
-    public function __construct(\Origami\Entity\Config &$config)
-    {
-        $this->initialize($config);
-    }
-    
-    /**
-     * Initialisateur
-     * @param \Origami\Entity\Config $config
-     */
-    public function initialize(\Origami\Entity\Config &$config)
+    public function __construct(\Origami\Entity\Config $config)
     {
         foreach ($config->getField() as $field) {
             $this->fields[$field['name']] = new \Origami\Entity\Shema\Field($field, NULL, TRUE);
@@ -112,9 +103,8 @@ class Storage
                 $this->set($key, $value, $silence);
             }
             // Si l'index n'est pas un tableau
-        } else if (isset($this->fields[$index])) {
+        } else if (isset($this->fields[$index])) {            
             $this->fields[$index]->setValue($value, $silence);
-
             // Si le mode silence est désactivé et si la valeur a changé
             if ($silence === FALSE && $this->fields[$index]->isUpdate()) {
                 $this->update[$index] = $this->fields[$index];

@@ -29,18 +29,7 @@ class Association
      * @param \Origami\Entity\Config $config
      * @param \Origami\Entity\Data\Storage $storage
      */
-    public function __construct(\Origami\Entity\Config &$config, \Origami\Entity\Data\Storage &$storage)
-    {
-        $this->initialize($config, $storage);
-    }
-    
-    /**
-     * Initialisateur
-     * @param \Origami\Entity\Config $config
-     * @param \Origami\Entity\Data\Storage $storage
-     * @return boolean
-     */
-    private function initialize(\Origami\Entity\Config &$config, \Origami\Entity\Data\Storage &$storage)
+    public function __construct(\Origami\Entity\Config $config, \Origami\Entity\Data\Storage $storage)
     {
         // Le stockage
         $this->storage =& $storage;

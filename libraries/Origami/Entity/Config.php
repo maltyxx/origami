@@ -77,10 +77,14 @@ class Config
      * @param array $config
      * @param \Origami\Entity $entity
      */
-    public function __construct(\Origami &$origami, \Origami\Entity &$entity)
+    public function __construct($entity)
     {
-        // Configuration générale
-        $this->setOrigami($origami);
+        $this->initialize($entity);
+    }
+	
+	private function initialize($entity) {
+		// Configuration générale
+        $this->setOrigami($entity);
 
         // Configuration de la classe
         $this->setClass($entity);
@@ -102,7 +106,7 @@ class Config
 
         // Configuration des validateurs
         $this->setValidation($entity);
-    }
+	}
 
     /**
      * Configuration générale
@@ -124,9 +128,9 @@ class Config
         }
     }
 
-    public function setOrigami(\Origami &$origami)
+    public function setOrigami($entity)
     {
-        $this->origami = $origami->getConfig();
+        $this->origami = $entity::origami();
     }
 
     public function getClass()
@@ -134,9 +138,9 @@ class Config
         return $this->class;
     }
 
-    public function setClass(\Origami\Entity &$entity)
+    public function setClass($entity)
     {
-        $this->class = $entity->getClass();
+        $this->class = $entity::entity();
     }
 
     public function getDataBase()
@@ -144,9 +148,9 @@ class Config
         return $this->database;
     }
 
-    public function setDataBase(\Origami\Entity &$entity)
+    public function setDataBase($entity)
     {
-        $this->database = $entity->getDataBase();
+        $this->database = $entity::dataBase();
     }
 
     public function getTable()
@@ -154,9 +158,9 @@ class Config
         return $this->table;
     }
 
-    public function setTable(\Origami\Entity &$entity)
+    public function setTable($entity)
     {
-        $this->table = $entity->getTable();
+        $this->table = $entity::table();
     }
 
     public function getPrimaryKey()
@@ -164,9 +168,9 @@ class Config
         return $this->primary_key;
     }
 
-    public function setPrimaryKey(\Origami\Entity &$entity)
+    public function setPrimaryKey($entity)
     {
-        $this->primary_key = $entity->getPrimaryKey();
+        $this->primary_key = $entity::primaryKey();
     }
 
     public function getField($index = NULL)
@@ -185,11 +189,11 @@ class Config
         }
     }
 
-    public function setField(\Origami\Entity &$entity)
+    public function setField($entity)
     {
         $this->fields = array();
 
-        foreach ($entity->getFields() as $field) {
+        foreach ($entity::fields() as $field) {
             $this->fields[$field['name']] = $field;
 
             // Si le champ est crypté
@@ -251,11 +255,11 @@ class Config
         }
     }
 
-    public function setAssociation(\Origami\Entity &$entity)
+    public function setAssociation($entity)
     {
         $this->associations = array();
 
-        foreach ($entity->getAssociations() as $field) {
+        foreach ($entity::associations() as $field) {
             $this->associations[$field['association_key']] = $field;
         }
     }
@@ -276,11 +280,11 @@ class Config
         }
     }
 
-    public function setValidation(\Origami\Entity &$entity)
+    public function setValidation($entity)
     {
         $this->validations = array();
 
-        foreach ($entity->getValidations() as $field) {
+        foreach ($entity::validations() as $field) {
             $this->validations[$field['field']] = $field;
         }
     }
