@@ -33,4 +33,4 @@ class Database
 }
 
 /* End of file Database.php */
-/* Location: ./libraries/Origami/Entity/Db/Database.php */
+/* Location: ./libraries/Origami/Database.php */

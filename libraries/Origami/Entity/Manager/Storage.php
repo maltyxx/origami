@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity\Data;
+namespace Origami\Entity\Manager;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -19,20 +19,19 @@ class Storage
     private $fields = array();
     
     /**
-     * Liste des champs à mettre à jour
+     * Liste des champs a mettre à jour
      * @var array $update
      */
     private $update = array();
     
     /**
      * Constructeur
-     * @param \Origami\Entity\Config $config
+     * @param \Origami\Entity\Manager\Config $config
      */
-    public function __construct(\Origami\Entity\Config $config)
+    public function __construct(\Origami\Entity\Manager\Config $config)
     {
-        foreach ($config->getField() as $field) {
-            $this->fields[$field['name']] = new \Origami\Entity\Shema\Field($field, NULL, TRUE);
-        }
+        // Instance du gestionnaire de configuration
+        $this->setConfig($config);
     }
     
     /**
@@ -113,7 +112,7 @@ class Storage
     }
     
     /**
-     * Si il y a des champs à mettre à jour
+     * Si il y a des champs a mettre à jour
      * @return boolean
      */
     public function isUpdate()
@@ -122,14 +121,25 @@ class Storage
     }
     
     /**
-     * Efface les champs à mettre à jour
+     * Efface les champs a mettre à jour
      */
     public function cleanUpdate()
     {
         $this->update = array();
     }
+    
+    /**
+     * Renseigne le gestionnaire d'erreur
+     * @param \Origami\Entity\Manager\Config $config
+     */
+    private function setConfig(\Origami\Entity\Manager\Config &$config)
+    {
+        foreach ($config->getField() as $field) {
+            $this->fields[$field['name']] = new \Origami\Entity\Shema\Field($field, NULL, TRUE);
+        }
+    }
 
 }
 
 /* End of file Storage.php */
-/* Location: ./libraries/Origami/Data/Storage.php */
+/* Location: ./libraries/Origami/Entity/Manager/Storage.php */

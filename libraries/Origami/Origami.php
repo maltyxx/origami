@@ -2,13 +2,13 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require(__DIR__.'/Database.php');
-require(__DIR__.'/Query.php');
-require(__DIR__.'/Entity/Common.php');
-require(__DIR__.'/Entity.php');
-require(__DIR__.'/Entity/Config.php');
-require(__DIR__.'/Entity/Association.php');
-require(__DIR__.'/Entity/Validator.php');
-require(__DIR__.'/Entity/Storage.php');
+require(__DIR__.'/Entity/Core.php');
+require(__DIR__.'/Entity/Entity.php');
+require(__DIR__.'/Entity/Manager/Config.php');
+require(__DIR__.'/Entity/Manager/Query.php');
+require(__DIR__.'/Entity/Manager/Storage.php');
+require(__DIR__.'/Entity/Manager/Association.php');
+require(__DIR__.'/Entity/Manager/Validator.php');
 require(__DIR__.'/Entity/Shema/Association.php');
 require(__DIR__.'/Entity/Shema/Field.php');
 require(__DIR__.'/Entity/Shema/PrimaryKey.php');

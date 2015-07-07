@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami;
+namespace Origami\Entity;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -10,28 +10,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link https://github.com/maltyxx/origami
  */
-class Entity extends Common
+class Entity extends \Origami\Entity\Core
 {
-    
+    /**
+     * Gestionnaire de configuration
+     * @var \Origami\Entity\Manager\Config 
+     */
     protected $_config;
     
+    /**
+     * Gestionnaire de requête
+     * @var \Origami\Entity\Manager\Query
+     */
     protected $_query;
 
     /**
-     *
-     * @var \Origami\Entity\Data\Storage
+     * Gestionnaire de stockage
+     * @var \Origami\Entity\Manager\Storage
      */
     protected $_storage;
 
     /**
-     *
-     * @var \Origami\Entity\Association
+     * Gestionnaire de relation
+     * @var \Origami\Entity\Manager\Association
      */
     protected $_association;
 
     /**
-     *
-     * @var \Origami\Entity\Validator
+     * Gestionnaire de validation
+     * @var \Origami\Entity\Manager\Validator
      */
     protected $_validator;
 
@@ -42,46 +49,45 @@ class Entity extends Common
     function __construct($data = NULL)
     {
         // Gestinnaire de configuation
-        $this->_config = new \Origami\Entity\Config(self::getClass());
+        $this->_config = new \Origami\Entity\Manager\Config(self::entity());
         
         // Gestinnaire de query
-        $this->_query = new \Origami\Entity\Db\Query($this->_config);
+        $this->_query = new \Origami\Entity\Manager\Query($this->_config);
 
         // Gestionnaire de stockage
-        $this->_storage = new \Origami\Entity\Data\Storage($this->_config);
+        $this->_storage = new \Origami\Entity\Manager\Storage($this->_config);
 
         // Gestionnaire d'association
-        $this->_association = new \Origami\Entity\Association($this->_config, $this->_storage);
+        $this->_association = new \Origami\Entity\Manager\Association($this->_config, $this->_storage);
 
         // Gestionnaire de validation
-        $this->_validator = new \Origami\Entity\Validator($this->_config, $this->_storage);
+        $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
 
-        if ($data !== NULL) {
-            // Si la variable $data est un entier, c'est une clé primaire
-            if (is_numeric($data)) {
-                // Récupère l'objet grêce à la clé primaire
-                $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
+        // Si la variable $data est un entier, c'est une clé primaire
+        if (is_numeric($data)) {
+            // Récupère l'objet grêce à la clé primaire
+            $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
 
-                // Si l'objet est trouvé
-                if ($object instanceof \Origami\Entity) {
-                    // Insère les donnée en silence
-                    $this->_storage->set($object->getToArray(), NULL, TRUE);
-                }
-
-                // Si la variable $data est une instance de la classe Orm_association
-            } else if ($data instanceof \Origami\Entity\Shema\Association) {
-                $this->_query->setAssociation($data);
-
-                // Si la variable $data est un tableau
-            } else if (is_array($data) && !empty($data)) {
-                $this->_storage->set($data);
+            // Si l'objet est trouvé
+            if ($object instanceof \Origami\Entity\Entity) {
+                // Insère les donnée en silence
+                $this->_storage->set($object->getToArray(), NULL, TRUE);
             }
+
+            // Si la variable $data est une instance \Origami\Entity\Shema\Association
+        } else if ($data instanceof \Origami\Entity\Shema\Association) {
+            $this->_query->setAssociation($data);
+
+            // Si la variable $data est un tableau
+        } else if (is_array($data) && !empty($data)) {
+            $this->_storage->set($data);
         }
+        
     }
 
     /**
-     * Si un champ est définie
-     * @param type $name
+     * Détermine si un attribut est définie et est différente de NULL
+     * @param string $name
      * @return boolean
      */
     public function __isset($name)
@@ -90,8 +96,8 @@ class Entity extends Common
     }
 
     /**
-     * Récupère la valeur d'un champ
-     * @param type $name
+     * Retourne la valeur d'un attribut
+     * @param string $name
      * @return mixed
      */
     public function __get($name)
@@ -100,7 +106,7 @@ class Entity extends Common
     }
 
     /**
-     * Modifie la valeur d'un champ
+     * Modifie la valeur d'un attribut
      * @param string $name
      * @param mixed $value
      */
@@ -110,56 +116,80 @@ class Entity extends Common
     }
 
     /**
-     * Passage d'objets en appelant la methode du nom de la relation
+     * Retourne la relation avec un autre modèle
      * @param string $name
      * @param array $arguments
-     * @return Orm_entity
+     * @return Entity\Db\Query
      */
     public function __call($name, $arguments = array())
     {
         try {
-            if (($association = $this->_association->get($name)) !== FALSE) {
-                // Retoune le nouveau modèle associé
+            // 
+            if (($association = $this->_association->get($name)) !== FALSE) {                
+                // Créer une association
                 $entity = $association->associated();
                 
+                // Retourne le gestionnaire de requête 
                 return $entity->getQuery();
 
                 // Sinon, il y a une erreur
             } else {
-                throw new Exception("L'association $name est introuvable dans le modèle ".self::getClass().PHP_EOL);
+                throw new Exception("L'association $name est introuvable dans le modèle ".self::entity().PHP_EOL);
             }
         } catch (Exception $exception) {
             exit("Origami a rencontré un problème : {$exception->getMessage()}");
         }
     }
-
+    
+    /**
+     * Retourne les résultats dans un tableau associatif
+     * @param string $index
+     * @return array
+     */
     public function getToArray($index = NULL)
     {
         return $this->_storage->getValue($index);
     }
-
+    
+    /**
+     * Retourne les résultats au format JSON
+     * @param string $index
+     * @return array
+     */
     public function getToJson($index = NULL)
     {
         return json_encode($this->_storage->getValue($index));
     }
     
+    /**
+     * Retourne le gestionnaire de configuration
+     * @return Entity\Config
+     */
     public function getConfig()
     {
         return $this->_config;
     }
     
+    /**
+     * Retourne le gestionnaire de requête
+     * @return Entity\Db\Query
+     */
     public function getQuery()
     {
         return $this->_query;
     }
     
+    /**
+     * Retourne le gestionnaire de stockage
+     * @return Entity\Data\Storage
+     */
     public function getStorage()
     {
         return $this->_storage;
     }
 
     /**
-     * Valide un modèle et retourne ses erreurs
+     * Lance la validation et retourne ses erreurs
      * @return array|boolean
      */
     public function validate()
@@ -168,7 +198,7 @@ class Entity extends Common
     }
 
     /**
-     * Si un modèle est valide
+     * Vérifie si les données de l'entité sont valides
      * @return boolean
      */
     public function is_valid()
@@ -177,7 +207,7 @@ class Entity extends Common
     }
 
     /**
-     * Sauvegarde un modèle
+     * Sauvegarde les valeurs de l'entité en base de donnée
      * @param boolean $replace
      * @param boolean $force_insert
      * @return boolean
@@ -245,7 +275,7 @@ class Entity extends Common
     }
 
     /**
-     * Efface un modèle l'instance en cours
+     * Efface l'entité en base de donnée
      * @return boolean
      */
     public function remove()
@@ -263,7 +293,11 @@ class Entity extends Common
             ->where($field->getName(), $value)
             ->delete($this->_config->getTable());
     }
-
+    
+    /**
+     * Retourne l'object db
+     * @return type
+     */
     private function db()
     {
         return \Origami\Database::link($this->_config->getDataBase());
@@ -320,5 +354,5 @@ class Entity extends Common
 
 }
 
-/* End of file Orm_entity.php */
-/* Location: ./application/libraries/Orm_entity.php */
+/* End of file Entity.php */
+/* Location: ./libraries/Origami/Entity/Entity.php */

@@ -192,7 +192,7 @@ class Origami_generator extends CI_Controller {
             
             $class_name = $table['Name'];
             
-            $this->_append("class $class_name extends \Origami\Entity\r\n");
+            $this->_append("class $class_name extends \Origami\Entity\Entity\r\n");
             $this->_append("{\r\n");
 
             // GESTION DES CONSTANTES

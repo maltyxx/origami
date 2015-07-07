@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity;
+namespace Origami\Entity\Manager;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -26,28 +26,18 @@ class Association
     
     /**
      * Constructeur
-     * @param \Origami\Entity\Config $config
+     * @param \Origami\Entity\Manager\Config $config
      * @param \Origami\Entity\Data\Storage $storage
      */
-    public function __construct(\Origami\Entity\Config $config, \Origami\Entity\Data\Storage $storage)
+    public function __construct(\Origami\Entity\Manager\Config $config, \Origami\Entity\Manager\Storage $storage)
     {
-        // Le stockage
-        $this->storage =& $storage;
-        
-        // Configuration des associations
-        $associations = $config->getAssociation();
+        // Instance du gestionnaire de configuration
+        $this->setConfig($config);
 
-        // Si il y a pas de champs a valider
-        if (empty($associations)) {
-            return FALSE;
-        }
-        
-        // Si il y a des champs a valider
-        foreach ($associations as $association) {           
-            $this->associations[$association['association_key']] = new \Origami\Entity\Shema\Association($association);
-        }
+        // Instance du gestionnaire de stockage
+        $this->setStorage($storage);
     }
-    
+
     /**
      * Trouve une relation
      * @param string|NULL $index
@@ -77,8 +67,38 @@ class Association
             return FALSE;
         }
     }
+    
+    /**
+     * Renseigne le gestionnaire d'erreur
+     * @param \Origami\Entity\Manager\Config $config
+     * @return boolean
+     */
+    private function setConfig(\Origami\Entity\Manager\Config &$config)
+    {
+        // Configuration des associations
+        $associations = $config->getAssociation();
+
+        // Si il y a pas de champs a valider
+        if (empty($associations)) {
+            return FALSE;
+        }
+        
+        // Si il y a des champs a valider
+        foreach ($associations as $association) {           
+            $this->associations[$association['association_key']] = new \Origami\Entity\Shema\Association($association);
+        }
+    }
+
+    /**
+     * Renseigne le gestionnaire de stockage
+     * @param \Origami\Entity\Manager\Storage $storage
+     */
+    private function setStorage(\Origami\Entity\Manager\Storage &$storage)
+    {
+        $this->storage = &$storage;
+    }
 
 }
 
-/* End of file Orm_association.php */
-/* Location: ./application/libraries/Orm_association.php */
+/* End of file Association.php */
+/* Location: ./libraries/Origami/Entity/Manager/Association.php */

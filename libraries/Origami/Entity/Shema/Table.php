@@ -20,9 +20,9 @@ class Table
 
     /**
      * Contructeur
-     * @param \Origami\Entity\Config $config
+     * @param \Origami\Entity\Manager\Config $config
      */
-    public function __construct(\Origami\Entity\Config &$config)
+    public function __construct(\Origami\Entity\Manager\Config &$config)
     {
         $this->setName($config);
     }
@@ -38,9 +38,9 @@ class Table
 
     /**
      * Modifie le nom de la table
-     * @param \Origami\Entity\Config $config
+     * @param \Origami\Entity\Manager\Config $config
      */
-    public function setName(\Origami\Entity\Config &$config)
+    public function setName(\Origami\Entity\Manager\Config &$config)
     {
         $this->name = $config->getTable();
     }

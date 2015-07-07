@@ -54,7 +54,7 @@ class Association
 
     /**
      * Constructeur
-     * @param \Origami\Entity\Config $config
+     * @param \Origami\Entity\Manager\Config $config
      * @param integer $value
      */
     public function __construct(array $config)

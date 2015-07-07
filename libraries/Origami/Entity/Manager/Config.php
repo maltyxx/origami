@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity;
+namespace Origami\Entity\Manager;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -79,11 +79,7 @@ class Config
      */
     public function __construct($entity)
     {
-        $this->initialize($entity);
-    }
-	
-	private function initialize($entity) {
-		// Configuration générale
+        // Configuration générale
         $this->setOrigami($entity);
 
         // Configuration de la classe
@@ -106,10 +102,10 @@ class Config
 
         // Configuration des validateurs
         $this->setValidation($entity);
-	}
+    }
 
     /**
-     * Configuration générale
+     * Retourne la configuration générale
      * @param type $index
      * @return mixed
      */
@@ -127,52 +123,92 @@ class Config
             return FALSE;
         }
     }
-
+    
+    /**
+     * Renseigne la configuration générale
+     * @param string $entity
+     */
     public function setOrigami($entity)
     {
         $this->origami = $entity::origami();
     }
-
+    
+    /**
+     * Retourne le nom de l'entité
+     * @return string
+     */
     public function getClass()
     {
         return $this->class;
     }
 
+    /**
+     * Renseigne l'entité
+     * @param string $entity
+     */
     public function setClass($entity)
     {
         $this->class = $entity::entity();
     }
 
+    /**
+     * Retourne le nom de la base de donnée
+     * @return string
+     */
     public function getDataBase()
     {
         return $this->database;
     }
 
+    /**
+     * Renseigne la base de donnée
+     * @param string $entity
+     */
     public function setDataBase($entity)
     {
         $this->database = $entity::dataBase();
     }
 
+    /**
+     * Retourne le nom de la table
+     * @return string
+     */
     public function getTable()
     {
         return $this->table;
     }
 
+    /**
+     * Renseigne la table
+     * @param string $entity
+     */
     public function setTable($entity)
     {
         $this->table = $entity::table();
     }
 
+    /**
+     * Retourne le nom de la clé primaire
+     * @return string
+     */
     public function getPrimaryKey()
     {
         return $this->primary_key;
     }
 
+    /**
+     * Renseigne la clé primaire
+     * @param string $entity
+     */
     public function setPrimaryKey($entity)
     {
         $this->primary_key = $entity::primaryKey();
     }
 
+    /**
+     * Retourne la liste des champs
+     * @return mixed
+     */
     public function getField($index = NULL)
     {
         // Si l'index est NULL
@@ -189,6 +225,10 @@ class Config
         }
     }
 
+    /**
+     * Renseigne les champs
+     * @param string $entity
+     */
     public function setField($entity)
     {
         $this->fields = array();
@@ -207,6 +247,10 @@ class Config
         }
     }
 
+    /**
+     * Retourne la liste des champs encryptés
+     * @return mixed
+     */
     public function getFieldEncrypt($index = NULL)
     {
         // Si l'index est NULL
@@ -223,6 +267,10 @@ class Config
         }
     }
 
+    /**
+     * Retourne la liste des champs binaires
+     * @return mixed
+     */
     public function getFieldBinary($index = NULL)
     {
         // Si l'index est NULL
@@ -239,6 +287,10 @@ class Config
         }
     }
 
+    /**
+     * Retourne la liste des associations
+     * @return mixed
+     */
     public function getAssociation($index = NULL)
     {
         // Si l'index est NULL
@@ -255,6 +307,10 @@ class Config
         }
     }
 
+    /**
+     * Renseigne les associations
+     * @param string $entity
+     */
     public function setAssociation($entity)
     {
         $this->associations = array();
@@ -264,6 +320,10 @@ class Config
         }
     }
 
+    /**
+     * Retourne la liste des validations
+     * @return mixed
+     */
     public function getValidation($index = NULL)
     {
         // Si l'index est NULL
@@ -280,6 +340,10 @@ class Config
         }
     }
 
+    /**
+     * Renseigne les validations
+     * @param string $entity
+     */
     public function setValidation($entity)
     {
         $this->validations = array();
@@ -292,4 +356,4 @@ class Config
 }
 
 /* End of file Config.php */
-/* Location: ./libraries/Origami/Entity/Config.php */
+/* Location: ./libraries/Origami/Entity/Manager/Config.php */

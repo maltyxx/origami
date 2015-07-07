@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami;
+namespace Origami\Entity;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -10,59 +10,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link https://github.com/maltyxx/origami
  */
-class Common
+class Core
 {
     /**
-     * Nom de la table
+     * Table
      * @var string $table
      */
 	protected static $table;
 	
     /**
-     * Nom de la clé primaire
+     * Clé primaire
      * @var string $primary_key
      */
 	protected static $primary_key;
 	
     /**
-     * Les champs
+     * Champs
      * @var array $fields
      */
 	protected static $fields = array();
 	
     /**
-     * Les associations
+     * Associations
      * @var array $associations
      */
 	protected static $associations = array();
 	
     /**
-     * Les validations
+     * Validations
      * @var array $validations
      */
 	protected static $validations = array();
 	
     /**
-     * 
-     * @var \Origami\Entity\Config $config
+     * Configuration
+     * @var \Origami\Entity\Manager\Config $config
      */
 	protected static $config;
 	
 	public static function __callStatic($name, $arguments = array()) {
 		        
-        if (!isset(self::$config[self::entity()])) {
-            self::$config[self::entity()] = new \Origami\Entity\Config(self::entity());
-        }
-		
+        self::$config = new \Origami\Entity\Manager\Config(self::entity());
+        
 		// Si c'est une requête
 		if (method_exists('\Origami\Entity\Db\Query', $name)) {
 			
-			$query = new \Origami\Entity\Db\Query(self::$config[self::entity()]);
+			$query = new \Origami\Entity\Db\Query(self::$config);
 			
 			return call_user_func_array(array($query, $name), $arguments);
 		}
 	}
 	
+    /**
+     * Configuration général
+     * @return array
+     */
 	public static function origami()
     {
         $CI =& get_instance();
@@ -71,7 +73,7 @@ class Common
     }
 	
 	/**
-     * Nom de la classe
+     * La classe
      * @return string
      */
     public static function entity()
@@ -80,16 +82,16 @@ class Common
     }
 
     /**
-     * Nom de la base de donnée
+     * La base de donnée
      * @return string
      */
     public static function database()
     {
-        return explode('\\', self::getClass())[1];
+        return explode('\\', self::entity())[1];
     }
 	
     /**
-     * Nom de la table
+     * La table
      * @return string
      */
     public static function table()
@@ -98,7 +100,7 @@ class Common
     }
 
     /**
-     * Nom de la clé primaire
+     * La clé primaire
      * @return string
      */
     public static function primaryKey()
@@ -107,7 +109,7 @@ class Common
     }
 
     /**
-     * Liste des champs
+     * Les champs
      * @return array
      */
     public static function fields()
@@ -116,7 +118,7 @@ class Common
     }
 
     /**
-     * Liste des associations
+     * Les associations
      * @return array
      */
     public static function associations()
@@ -125,7 +127,7 @@ class Common
     }
 
     /**
-     * Liste des validateurs
+     * Les validateurs
      * @return array
      */
     public static function validations()
@@ -134,15 +136,15 @@ class Common
     }
 	
 	/**
-     * Liste des validateurs
+     * La configuration de l'entité
      * @return array
      */
     public static function config()
     {        
-        return self::$config[self::entity()];
+        return self::$config;
     }
 
 }
 
-/* End of file Orm_entity.php */
-/* Location: ./application/libraries/Orm_entity.php */
+/* End of file Core.php */
+/* Location: ./libraries/Origami/Entity/Core.php */

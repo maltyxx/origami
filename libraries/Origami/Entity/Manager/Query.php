@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity\Db;
+namespace Origami\Entity\Manager;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -12,18 +12,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Query
 {
+    /**
+     * Gestionnaire de configuration
+     * @var \Origami\Entity\Manager\Config
+     */
 	private $config;
 
-    public function __construct(\Origami\Entity\Config $config) {
-        $this->config =& $config;
+    /**
+     * Contructeur
+     * @param \Origami\Entity\Manager\Config $config
+     */
+    public function __construct(\Origami\Entity\Manager\Config $config)
+    {
+        // Instance du gestionnaire de configuration
+        $this->setConfig($config);
 	}
-	
+
 	/**
      * Ajoute une clé primaire
      * @param \Origami\Entity\Shema\PrimaryKey $primary_key
      */
     public function setPrimaryKey(\Origami\Entity\Shema\PrimaryKey &$primary_key, $value)
-    {        
+    {
         \Origami\Database::link($this->config->getDataBase())->where($primary_key->getName(), $value);
 
         return $this;
@@ -52,7 +62,7 @@ class Query
     }
 	
     /**
-     * Génère un WHERE en SQL
+     * Créer un WHERE en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
@@ -65,7 +75,7 @@ class Query
     }
 
     /**
-     * Génère un WHERE % OR en SQL
+     * Créer un WHERE % OR en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
@@ -78,7 +88,7 @@ class Query
     }
 
     /**
-     * Génère un WHERE IN en SQL
+     * Créer un WHERE IN en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
@@ -91,7 +101,7 @@ class Query
     }
 
     /**
-     * Génère un WHERE NOT IN en SQL
+     * Créer un WHERE NOT IN en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
@@ -104,7 +114,7 @@ class Query
     }
 
     /**
-     * Génère un WHERE OR % NOT IN en SQL
+     * Créer un WHERE OR % NOT IN en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
@@ -117,7 +127,7 @@ class Query
     }
 
     /**
-     * Génère un LIKE en SQL
+     * Créer un LIKE en SQL
      * @param mixe $field
      * @param string $match
      * @param string $side
@@ -130,7 +140,7 @@ class Query
     }
 
     /**
-     * Génère un OR % LIKE en SQL
+     * Créer un OR % LIKE en SQL
      * @param mixe $field
      * @param string $match
      * @param string $side
@@ -143,7 +153,7 @@ class Query
     }
 
     /**
-     * Génère un NOT LIKE en SQL
+     * Créer un NOT LIKE en SQL
      * @param mixe $field
      * @param string $match
      * @param string $side
@@ -156,7 +166,7 @@ class Query
     }
 
     /**
-     * Génère un OR % NOT LIKE en SQL
+     * Créer un OR % NOT LIKE en SQL
      * @param mixe $field
      * @param string $match
      * @param string $side
@@ -169,7 +179,7 @@ class Query
     }
 
     /**
-     * Génère un GROUP BY en SQL
+     * Créer un GROUP BY en SQL
      * @param string $by
      */
     public function group_by($by)
@@ -180,7 +190,7 @@ class Query
     }
 
     /**
-     * Génère un HAVING en SQL
+     * Créer un HAVING en SQL
      * @param string $key
      * @param string $value
      * @param boolean $escape
@@ -193,7 +203,7 @@ class Query
     }
 
     /**
-     * Génère un OR HAVING en SQL
+     * Créer un OR HAVING en SQL
      * @param string $key
      * @param string $value
      * @param boolean $escape
@@ -206,7 +216,7 @@ class Query
     }
 
     /**
-     * Génère un ORDER BY en SQL
+     * Créer un ORDER BY en SQL
      * @param string $orderby
      * @param string $direction
      */
@@ -218,7 +228,7 @@ class Query
     }
 
     /**
-     * Génère un LIMIT en SQL
+     * Créer un LIMIT en SQL
      * @param string $value
      * @param string $offset
      */
@@ -230,7 +240,7 @@ class Query
     }
 
     /**
-     * Génère un OFFSET en SQL
+     * Créer un OFFSET en SQL
      * @param string $offset
      */
     public function offset($offset)
@@ -359,7 +369,16 @@ class Query
     {
         return \Origami\Database::link($this->config->getDataBase())->delete($this->config->getTable());
     }
+    
+    /**
+     * Renseigne le gestionnaire d'erreur
+     * @param \Origami\Entity\Manager\Config $config
+     */
+    private function setConfig(\Origami\Entity\Manager\Config &$config)
+    {
+       $this->config = &$config;
+    }
 }
 
-/* End of file Orm_entity.php */
-/* Location: ./application/libraries/Orm_entity.php */
+/* End of file Query.php */
+/* Location: ./libraries/Origami/Entity/Manager/Query.php */
