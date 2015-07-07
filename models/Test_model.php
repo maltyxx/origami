@@ -23,8 +23,7 @@ class Test_model extends CI_Model
     
     public function add_user_address()
     {
-        $user_entity = new \Entity\test\user();
-        $user = $user_entity->find_one();
+        $user = \Entity\test\user::find_one();
          
         $address = new \Entity\test\address();
         $address->user_id = $user->id;
@@ -35,8 +34,7 @@ class Test_model extends CI_Model
     
      public function add_user_file()
     {
-        $user_entity = new \Entity\test\user();
-        $user = $user_entity->find_one();
+        $user = \Entity\test\user::find_one();
          
         $file = new \Entity\test\file();
         $file->user_id = $user->id;
@@ -48,45 +46,36 @@ class Test_model extends CI_Model
         
     public function get()
     {
-        $user = new \Entity\test\user();
-        return $user->find_one();
+        return \Entity\test\user::find_one();
     }
     
     public function get_user_address()
-    {
-        $user_entity = new \Entity\test\user();
-        
-        $user = $user_entity->find_one();
+    {        
+        $user = \Entity\test\user::find_one();
         
         return $user->address()->find_one();
     }
     
     public function get_user_file()
     {
-        $file_entity = new \Entity\test\file();
-        
-        $file = $file_entity->find_one();
-        
+        $file = \Entity\test\file::find_one();
+
         return $file;
     }
-    
+
     public function set()
-    {
-        $user_entity = new \Entity\test\user();
-        
-        $user = $user_entity->find_one();
+    {        
+        $user = \Entity\test\user::find_one();
         $user->firstname = 'John';
-        
+
         return $user->save();
     }
 
     public function del()
     {
-        $user_entity = new \Entity\test\user();
-        
-        $user = $user_entity->find_one();
-        
+        $user = \Entity\test\user::find_one();
+
         return $user->remove();
     }
-    
+
 }
