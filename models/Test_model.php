@@ -8,23 +8,29 @@ class Test_model extends CI_Model
         parent::__construct();
     
         // Dépendance
-        $this->load->library('origami');
+        $this->load->library('origami', array(
+            'entity_autoload' => TRUE,
+            'entity_path' => APPPATH.'third_party/origami/models/entities',
+            'binary_enable' => TRUE,
+            'encryption_enable' => TRUE,
+            'encryption_key' => bin2hex('Origamiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+        ));
     }
-    
+
     public function add()
     {
         $user = new \Entity\test\user();
         $user->firstname = 'John';
         $user->lastname = 'Do';
         $user->password = sha1('JohnDo');
-        
+
         return $user->save();
     }
-    
+
     public function add_user_address()
     {
         $user = \Entity\test\user::find_one();
-         
+        
         $address = new \Entity\test\address();
         $address->user_id = $user->id;
         $address->street = '1 Promenade des Anglais';

@@ -51,11 +51,11 @@ class Core
 	public static function __callStatic($name, $arguments = array()) {
 		        
         self::$config = new \Origami\Entity\Manager\Config(self::entity());
-        
+       
 		// Si c'est une requête
-		if (method_exists('\Origami\Entity\Db\Query', $name)) {
+		if (method_exists('\Origami\Entity\Manager\Query', $name)) {
 			
-			$query = new \Origami\Entity\Db\Query(self::$config);
+			$query = new \Origami\Entity\Manager\Query(self::$config);
 			
 			return call_user_func_array(array($query, $name), $arguments);
 		}

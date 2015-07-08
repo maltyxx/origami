@@ -123,21 +123,16 @@ class Entity extends \Origami\Entity\Core
      */
     public function __call($name, $arguments = array())
     {
-        try {
-            // 
-            if (($association = $this->_association->get($name)) !== FALSE) {                
-                // Créer une association
-                $entity = $association->associated();
-                
-                // Retourne le gestionnaire de requête 
-                return $entity->getQuery();
+        if (($association = $this->_association->get($name)) !== FALSE) {                
+            // Créer une association
+            $entity = $association->associated();
 
-                // Sinon, il y a une erreur
-            } else {
-                throw new Exception("L'association $name est introuvable dans le modèle ".self::entity().PHP_EOL);
-            }
-        } catch (Exception $exception) {
-            exit("Origami a rencontré un problème : {$exception->getMessage()}");
+            // Retourne le gestionnaire de requête 
+            return $entity->getQuery();
+
+            // Sinon, il y a une erreur
+        } else {
+            exit("Origami a rencontré un problème : L'association '$name' est introuvable dans le modèle ".self::entity().PHP_EOL);
         }
     }
     

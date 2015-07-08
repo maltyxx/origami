@@ -266,7 +266,7 @@ class Query
             // Si il y a des champs cryptés
             if (!empty($fields)) {
                 foreach ($fields as $field) {
-                   \Origami\Database::link($this->config->getDataBase())->select("CONVERT(AES_DECRYPT(FROM_BASE64(`{$field['name']}`), UNHEX('{$this->config->getConfig()->getOrigami('encryption_key')}'), UNHEX(`vector`)) USING 'utf8') AS `{$field['name']}`", FALSE);
+                   \Origami\Database::link($this->config->getDataBase())->select("CONVERT(AES_DECRYPT(FROM_BASE64(`{$field['name']}`), UNHEX('{$this->config->getOrigami('encryption_key')}'), UNHEX(`vector`)) USING 'utf8') AS `{$field['name']}`", FALSE);
                 }
             }
         }
@@ -292,7 +292,7 @@ class Query
      * @return array
      */
     private function result()
-    {       
+    {
         // Requête
         $results = $this->select()->from($this->config->getTable())->get()->result_array();
 
@@ -341,7 +341,7 @@ class Query
      * @return null|\Origami\Entity
      */
     public function find_one()
-    {        
+    {
 		// Limite la requête a un objet
         \Origami\Database::link($this->config->getDataBase())->limit(1);
 

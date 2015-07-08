@@ -27,11 +27,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         
         $this->unit->run($this->test_model->add_user_file(), TRUE, "Insert + binaire");
         
-        $this->unit->run($this->test_model->get()->get(), 'is_array', "Select");
+        $this->unit->run($this->test_model->get()->getToArray(), 'is_array', "Select");
         
-        $this->unit->run($this->test_model->get_user_address()->get(), 'is_array', "Select + relation + cryptage");
+        $this->unit->run($this->test_model->get_user_address()->getToArray(), 'is_array', "Select + relation + cryptage");
         
-        $this->unit->run($this->test_model->get_user_file()->get(), 'is_array', "Select + binaire");
+        $this->unit->run($this->test_model->get_user_file()->getToArray(), 'is_array', "Select + binaire");
         
         $this->unit->run($this->test_model->del(), TRUE, "Delete");
         
