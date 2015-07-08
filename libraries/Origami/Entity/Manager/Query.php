@@ -34,7 +34,7 @@ class Query
      */
     public function setPrimaryKey(\Origami\Entity\Shema\PrimaryKey &$primary_key, $value)
     {
-        \Origami\Database::link($this->config->getDataBase())->where($primary_key->getName(), $value);
+        \Origami\DB::get($this->config->getDataBase())->where($primary_key->getName(), $value);
 
         return $this;
     }
@@ -48,13 +48,13 @@ class Query
         // Recherche le type d'association
         switch ($association->getType()) {
             case \Origami\Entity\Shema\Association::TYPE_HAS_ONE:
-               \Origami\Database::link($this->config->getDataBase())->where($association->getPrimaryKey(), $association->getValue())->limit(1);
+               \Origami\DB::get($this->config->getDataBase())->where($association->getPrimaryKey(), $association->getValue())->limit(1);
                 break;
             case \Origami\Entity\Shema\Association::TYPE_HAS_MANY:
-               \Origami\Database::link($this->config->getDataBase())->where($association->getForeignKey(), $association->getValue());
+               \Origami\DB::get($this->config->getDataBase())->where($association->getForeignKey(), $association->getValue());
                 break;
             case \Origami\Entity\Shema\Association::TYPE_BELONGS_TO:
-               \Origami\Database::link($this->config->getDataBase())->where($association->getPrimaryKey(), $association->getValue())->limit(1);
+               \Origami\DB::get($this->config->getDataBase())->where($association->getPrimaryKey(), $association->getValue())->limit(1);
                 break;
         }
 
@@ -69,7 +69,7 @@ class Query
      */
     public function where($key, $value = NULL, $escape = TRUE)
     {
-       \Origami\Database::link($this->config->getDataBase())->where($key, $value, $escape);
+       \Origami\DB::get($this->config->getDataBase())->where($key, $value, $escape);
         
         return $this;
     }
@@ -82,7 +82,7 @@ class Query
      */
     public function or_where($key, $value = NULL, $escape = TRUE)
     {
-       \Origami\Database::link($this->config->getDataBase())->or_where($key, $value, $escape);
+       \Origami\DB::get($this->config->getDataBase())->or_where($key, $value, $escape);
 
         return $this;
     }
@@ -95,7 +95,7 @@ class Query
      */
     public function where_in($key = NULL, $values = NULL)
     {
-       \Origami\Database::link($this->config->getDataBase())->where_in($key, $values);
+       \Origami\DB::get($this->config->getDataBase())->where_in($key, $values);
 
         return $this;
     }
@@ -108,7 +108,7 @@ class Query
      */
     public function where_not_in($key = NULL, $values = NULL)
     {
-       \Origami\Database::link($this->config->getDataBase())->where_not_in($key, $values);
+       \Origami\DB::get($this->config->getDataBase())->where_not_in($key, $values);
 
         return $this;
     }
@@ -121,7 +121,7 @@ class Query
      */
     public function or_where_not_in($key = NULL, $values = NULL)
     {
-       \Origami\Database::link($this->config->getDataBase())->or_where_not_in($key, $values);
+       \Origami\DB::get($this->config->getDataBase())->or_where_not_in($key, $values);
 
         return $this;
     }
@@ -134,7 +134,7 @@ class Query
      */
     public function like($field, $match = '', $side = 'both')
     {
-       \Origami\Database::link($this->config->getDataBase())->like($field, $match, $side);
+       \Origami\DB::get($this->config->getDataBase())->like($field, $match, $side);
 
         return $this;
     }
@@ -147,7 +147,7 @@ class Query
      */
     public function or_like($field, $match = '', $side = 'both')
     {
-       \Origami\Database::link($this->config->getDataBase())->or_like($field, $match, $side);
+       \Origami\DB::get($this->config->getDataBase())->or_like($field, $match, $side);
 
         return $this;
     }
@@ -160,7 +160,7 @@ class Query
      */
     public function not_like($field, $match = '', $side = 'both')
     {
-       \Origami\Database::link($this->config->getDataBase())->or_like($field, $match, $side);
+       \Origami\DB::get($this->config->getDataBase())->or_like($field, $match, $side);
 
         return $this;
     }
@@ -173,7 +173,7 @@ class Query
      */
     public function or_not_like($field, $match = '', $side = 'both')
     {
-       \Origami\Database::link($this->config->getDataBase())->or_not_like($field, $match, $side);
+       \Origami\DB::get($this->config->getDataBase())->or_not_like($field, $match, $side);
 
         return $this;
     }
@@ -184,7 +184,7 @@ class Query
      */
     public function group_by($by)
     {
-       \Origami\Database::link($this->config->getDataBase())->group_by($by);
+       \Origami\DB::get($this->config->getDataBase())->group_by($by);
 
         return $this;
     }
@@ -197,7 +197,7 @@ class Query
      */
     public function having($key, $value = '', $escape = TRUE)
     {
-       \Origami\Database::link($this->config->getDataBase())->having($key, $value, $escape);
+       \Origami\DB::get($this->config->getDataBase())->having($key, $value, $escape);
 
         return $this;
     }
@@ -210,7 +210,7 @@ class Query
      */
     public function or_having($key, $value = '', $escape = TRUE)
     {
-       \Origami\Database::link($this->config->getDataBase())->or_having($key, $value, $escape);
+       \Origami\DB::get($this->config->getDataBase())->or_having($key, $value, $escape);
 
         return $this;
     }
@@ -222,7 +222,7 @@ class Query
      */
     public function order_by($orderby, $direction = '')
     {
-       \Origami\Database::link($this->config->getDataBase())->order_by($orderby, $direction);
+       \Origami\DB::get($this->config->getDataBase())->order_by($orderby, $direction);
 
         return $this;
     }
@@ -234,7 +234,7 @@ class Query
      */
     public function limit($value, $offset = '')
     {
-       \Origami\Database::link($this->config->getDataBase())->limit($value, $offset);
+       \Origami\DB::get($this->config->getDataBase())->limit($value, $offset);
 
         return $this;
     }
@@ -245,7 +245,7 @@ class Query
      */
     public function offset($offset)
     {
-       \Origami\Database::link($this->config->getDataBase())->offset($offset);
+       \Origami\DB::get($this->config->getDataBase())->offset($offset);
 
         return $this;
     }
@@ -256,7 +256,7 @@ class Query
     private function select()
     {
         // Par défault utilise un select *
-        \Origami\Database::link($this->config->getDataBase())->select('*');
+        \Origami\DB::get($this->config->getDataBase())->select('*');
         
         // Si le cryptage est activé et si il y a des champs cryptés
         if ($this->config->getOrigami('encryption_enable')) {
@@ -266,7 +266,7 @@ class Query
             // Si il y a des champs cryptés
             if (!empty($fields)) {
                 foreach ($fields as $field) {
-                   \Origami\Database::link($this->config->getDataBase())->select("CONVERT(AES_DECRYPT(FROM_BASE64(`{$field['name']}`), UNHEX('{$this->config->getOrigami('encryption_key')}'), UNHEX(`vector`)) USING 'utf8') AS `{$field['name']}`", FALSE);
+                   \Origami\DB::get($this->config->getDataBase())->select("CONVERT(AES_DECRYPT(FROM_BASE64(`{$field['name']}`), UNHEX('{$this->config->getOrigami('encryption_key')}'), UNHEX(`vector`)) USING 'utf8') AS `{$field['name']}`", FALSE);
                 }
             }
         }
@@ -279,12 +279,12 @@ class Query
             // Si il y a des champs binaires
             if (!empty($fields)) {
                 foreach ($fields as $field) {
-                   \Origami\Database::link($this->config->getDataBase())->select("TO_BASE64(`{$field['name']}`) AS `{$field['name']}`", FALSE);
+                   \Origami\DB::get($this->config->getDataBase())->select("TO_BASE64(`{$field['name']}`) AS `{$field['name']}`", FALSE);
                 }
             }
         }
 
-        return\Origami\Database::link($this->config->getDataBase());
+        return\Origami\DB::get($this->config->getDataBase());
     }
 	
 	/**
@@ -343,7 +343,7 @@ class Query
     public function find_one()
     {
 		// Limite la requête a un objet
-        \Origami\Database::link($this->config->getDataBase())->limit(1);
+        \Origami\DB::get($this->config->getDataBase())->limit(1);
 
         // Exécute la requête
         $objects = $this->find();
@@ -358,7 +358,7 @@ class Query
      */
     public function count()
     {
-		 return (int) \Origami\Database::link($this->config->getDataBase())->count_all_results($this->config->getTable());
+		 return (int) \Origami\DB::get($this->config->getDataBase())->count_all_results($this->config->getTable());
     }
 		
     /**
@@ -367,7 +367,7 @@ class Query
      */
     public function delete()
     {
-        return \Origami\Database::link($this->config->getDataBase())->delete($this->config->getTable());
+        return \Origami\DB::get($this->config->getDataBase())->delete($this->config->getTable());
     }
     
     /**

@@ -10,7 +10,7 @@ class Test_model extends CI_Model
         // Dépendance
         $this->load->library('origami', array(
             'entity_autoload' => TRUE,
-            'entity_path' => APPPATH.'third_party/origami/models/entities',
+            'entity_path' => APPPATH.'third_party/origami/models/Entity',
             'binary_enable' => TRUE,
             'encryption_enable' => TRUE,
             'encryption_key' => bin2hex('Origamiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
@@ -19,12 +19,15 @@ class Test_model extends CI_Model
 
     public function add()
     {
+        \Origami\DB::get('test')->trans_start();
+        
         $user = new \Entity\test\user();
         $user->firstname = 'John';
         $user->lastname = 'Do';
         $user->password = sha1('JohnDo');
-
-        return $user->save();
+        $user->save();
+        
+        return \Origami\DB::get('test')->trans_complete();
     }
 
     public function add_user_address()

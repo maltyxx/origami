@@ -10,9 +10,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link https://github.com/maltyxx/origami
  */
-class Database
+class DB
 {
-	public static function connect($name)
+	public static function link($name)
 	{
 		$CI =& get_instance();
 		
@@ -25,9 +25,9 @@ class Database
 		return $CI->{"db_$name"};
 	}
 	
-	public static function link($name)
+	public static function get($name)
 	{
-		return self::connect($name);
+		return self::link($name);
 	}
 	
 }

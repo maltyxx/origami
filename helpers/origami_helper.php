@@ -18,9 +18,9 @@ function origami_entity_autoload($class)
     $length = strlen($key);
 
     if (substr($class, 0, $length) === $key) {
-        $class = substr($class, $length);
+        $class = substr($class, $length);        
         $file_path = str_replace('\\', '/', get_instance()->origami->getConfig('entity_path').'/'.$class.'.php');
-
+                
         if (is_file($file_path)) {
             include_once($file_path);
         }

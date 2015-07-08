@@ -3,7 +3,7 @@ namespace Entity\test;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class file extends \Origami\Entity\Entity {
+class file extends \Origami\Entity\Core {
     
 	public static $table = 'file';
     
