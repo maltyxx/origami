@@ -13,7 +13,7 @@ class Test_model extends CI_Model
             'entity_path' => APPPATH.'third_party/origami/models/Entity',
             'binary_enable' => TRUE,
             'encryption_enable' => TRUE,
-            'encryption_key' => bin2hex('Origamiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+            'encryption_key' => bin2hex('Origami')
         ));
     }
 
