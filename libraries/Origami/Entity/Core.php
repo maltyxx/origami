@@ -46,7 +46,7 @@ class Core extends \Origami\Entity\Factory
      * Constructeur
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
      */
-    function __construct($data = NULL)
+    function __construct($data = NULL, $new = TRUE, $silence = FALSE)
     {
         // Gestinnaire de configuation
         $this->_config = new \Origami\Entity\Manager\Config(self::entity());
@@ -62,6 +62,9 @@ class Core extends \Origami\Entity\Factory
 
         // Gestionnaire de validation
         $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
+        
+        // Indique si c'est une nouvelle instance
+        $this->_storage->is_new($new);
 
         // Si la variable $data est un entier, c'est une clé primaire
         if (is_numeric($data)) {
@@ -70,8 +73,11 @@ class Core extends \Origami\Entity\Factory
 
             // Si l'objet est trouvé
             if ($object instanceof \Origami\Entity\Entity) {
+                // Indique que ce n'est pas une nouvelle instance
+                $this->_storage->isNew(FALSE);
+                
                 // Insère les donnée en silence
-                $this->_storage->set($object->getToArray(), NULL, TRUE);
+                $this->_storage->set($object->toArray(), NULL, TRUE);
             }
 
             // Si la variable $data est une instance \Origami\Entity\Shema\Association
@@ -80,7 +86,7 @@ class Core extends \Origami\Entity\Factory
 
             // Si la variable $data est un tableau
         } else if (is_array($data) && !empty($data)) {
-            $this->_storage->set($data);
+            $this->_storage->set($data, NULL, $silence);
         }
         
     }
@@ -92,7 +98,7 @@ class Core extends \Origami\Entity\Factory
      */
     public function __isset($name)
     {
-        return ($this->_storage->getValue($name) !== FALSE);
+        return ($this->_storage->value($name) !== FALSE);
     }
 
     /**
@@ -102,7 +108,7 @@ class Core extends \Origami\Entity\Factory
      */
     public function __get($name)
     {
-        return $this->_storage->getValue($name);
+        return $this->_storage->value($name);
     }
 
     /**
@@ -128,7 +134,7 @@ class Core extends \Origami\Entity\Factory
             $entity = $association->associated();
 
             // Retourne le gestionnaire de requête 
-            return $entity->getQuery();
+            return $entity->query();
 
             // Sinon, il y a une erreur
         } else {
@@ -141,9 +147,19 @@ class Core extends \Origami\Entity\Factory
      * @param string $index
      * @return array
      */
-    public function getToArray($index = NULL)
+    public function get($index = NULL)
     {
-        return $this->_storage->getValue($index);
+        return $this->_storage->value($index);
+    }
+    
+    /**
+     * Retourne les résultats dans un tableau associatif
+     * @param string $index
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->_storage->value();
     }
     
     /**
@@ -151,16 +167,26 @@ class Core extends \Origami\Entity\Factory
      * @param string $index
      * @return array
      */
-    public function getToJson($index = NULL)
+    public function toJson()
     {
-        return json_encode($this->_storage->getValue($index));
+        return json_encode($this->_storage->value());
     }
     
+    /**
+     * Modifie un ou plusieurs champs
+     * @param type $index
+     * @param type $value
+     * @param boolean $silence
+     */
+    public function set($index, $value = NULL, $silence = FALSE) {
+        $this->_storage->set($index, $value, $silence);
+    }
+
     /**
      * Retourne le gestionnaire de configuration
      * @return Entity\Config
      */
-    public function getConfig()
+    public function config()
     {
         return $this->_config;
     }
@@ -169,7 +195,7 @@ class Core extends \Origami\Entity\Factory
      * Retourne le gestionnaire de requête
      * @return Entity\Db\Query
      */
-    public function getQuery()
+    public function query()
     {
         return $this->_query;
     }
@@ -178,7 +204,7 @@ class Core extends \Origami\Entity\Factory
      * Retourne le gestionnaire de stockage
      * @return Entity\Data\Storage
      */
-    public function getStorage()
+    public function storage()
     {
         return $this->_storage;
     }
@@ -196,9 +222,37 @@ class Core extends \Origami\Entity\Factory
      * Vérifie si les données de l'entité sont valides
      * @return boolean
      */
-    public function is_valid()
+    public function isValid()
     {
         return $this->_validator->is_valid();
+    }
+    
+    /**
+     * Vérifie si l'entité a changé
+     * @param type $index
+     * @return boolean
+     */
+    public function dirty($index = NULL, $force = FALSE)
+    {
+        return $this->_storage->dirty($index, $force);
+    }
+    
+    /**
+     * Efface les champs modifiés
+     * @return boolean
+     */
+    public function clean($index = NULL)
+    {
+        return $this->_storage->clean($index);
+    }
+    
+    /**
+     * Vérifie si une entité a été Sauvegardée
+     * @return boolean
+     */
+    public function isNew($force = NULL)
+    {
+        return $this->_storage->isNew($force);
     }
 
     /**
@@ -208,16 +262,16 @@ class Core extends \Origami\Entity\Factory
      * @return boolean
      */
     public function save($replace = FALSE, $force_insert = FALSE)
-    {        
+    {
         // Clé primaire
         $field = $this->_storage->get($this->_config->getPrimaryKey());
         $field_value = $field->getValue();
 
         // Si la la requête doit être de type INSERT
         $has_insert = (empty($field_value) || $force_insert === TRUE);
-                
+        
         // Si il y a pas de changement
-        if ($this->_storage->isUpdate() === FALSE) {
+        if ($this->_storage->isDirty() === FALSE) {
             return FALSE;
         }
 
@@ -239,7 +293,7 @@ class Core extends \Origami\Entity\Factory
             }
 
             // Si la requete est de type insert
-        } else if ($has_insert) {
+        } else if ($has_insert === TRUE) {
             // Exécute la requête
             $query = $this
                 ->write()
@@ -261,9 +315,14 @@ class Core extends \Origami\Entity\Factory
                 ->where($field->getName(), $field->getValue())
                 ->update();
         }
+        
+        // Change le status de l'entité
+        if ($query === TRUE && $this->_storage->is_new()) {
+            $this->_storage->isNew(FALSE);
+        }
 
         // Vide les changements
-        $this->_storage->cleanUpdate();
+        $this->_storage->clean();
 
         // La requête a échoué
         return $query;

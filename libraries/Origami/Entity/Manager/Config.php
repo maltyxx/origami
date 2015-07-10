@@ -240,7 +240,7 @@ class Config
             if (isset($field['encrypt']) && $field['encrypt'] === TRUE) {
                 $this->fields_encrypt[$field['name']] = $field;
 
-                // Si le champ est binaire
+            // Si le champ est binaire
             } else if (isset($field['binary']) && $field['binary'] === TRUE) {
                 $this->fields_binary[$field['name']] = $field;
             }

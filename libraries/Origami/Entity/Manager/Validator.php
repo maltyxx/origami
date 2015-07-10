@@ -42,7 +42,7 @@ class Validator
      * Valide une entité et retourne ses erreurs
      * @return array|boolean
      */
-    public function validate()
+    public function validate($index = NULL)
     {
         $errors = array();
 

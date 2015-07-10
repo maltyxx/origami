@@ -78,12 +78,12 @@ class Association
         // Configuration des associations
         $associations = $config->getAssociation();
 
-        // Si il y a pas de champs a valider
+        // Si il y a pas de champ a valider
         if (empty($associations)) {
             return FALSE;
         }
         
-        // Si il y a des champs a valider
+        // Si il y a des champ a valider
         foreach ($associations as $association) {           
             $this->associations[$association['association_key']] = new \Origami\Entity\Shema\Association($association);
         }

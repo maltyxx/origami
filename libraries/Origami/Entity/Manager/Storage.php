@@ -17,13 +17,19 @@ class Storage
      * @var array $fields
      */
     private $fields = array();
+
+    /**
+     * Liste des champs modifié
+     * @var array $dirty
+     */
+    private $dirty = array();
     
     /**
-     * Liste des champs a mettre à jour
-     * @var array $update
+     * Si une entité a été Sauvegardée
+     * @var boolean
      */
-    private $update = array();
-    
+    private $new = FALSE;
+
     /**
      * Constructeur
      * @param \Origami\Entity\Manager\Config $config
@@ -33,7 +39,7 @@ class Storage
         // Instance du gestionnaire de configuration
         $this->setConfig($config);
     }
-    
+
     /**
      * Recherche un ou plusieurs champs
      * @param string|NULL $index
@@ -49,45 +55,7 @@ class Storage
             return FALSE;
         }
     }
-    
-    /**
-     * Recherche la valeur d'un ou plusieurs champs
-     * @param type $index
-     * @return mixed
-     */
-    public function getValue($index = NULL)
-    {
-        if ($index === NULL) {
-            $fields = array();
 
-            foreach ($this->fields as $field) {
-                $fields[$field->getName()] = $field->getValue();
-            }
-
-            return $fields;
-        } else if (isset($this->fields[$index])) {
-            return $this->fields[$index]->getValue();
-        } else {
-            return FALSE;
-        }
-    }
-    
-    /**
-     * Recherche les champs qui ont été mis à jour
-     * @param type $index
-     * @return array|\Origami\Entity\Shema\Field|boolean
-     */
-    public function getUpdate($index = NULL)
-    {
-        if ($index === NULL) {
-            return $this->update;
-        } else if (isset($this->update[$index])) {
-            return $this->update[$index];
-        } else {
-            return FALSE;
-        }
-    }
-    
     /**
      * Modifie la valeur d'un ou de plusieurs champss
      * @param string|NULL $index
@@ -102,32 +70,107 @@ class Storage
                 $this->set($key, $value, $silence);
             }
             // Si l'index n'est pas un tableau
-        } else if (isset($this->fields[$index])) {            
+        } else if (isset($this->fields[$index])) {
             $this->fields[$index]->setValue($value, $silence);
             // Si le mode silence est désactivé et si la valeur a changé
-            if ($silence === FALSE && $this->fields[$index]->isUpdate()) {
-                $this->update[$index] = $this->fields[$index];
+            if ($silence === FALSE && $this->fields[$index]->isDirty()) {
+                $this->fields[$index]->dirty();
+                $this->dirty[$index] = $this->fields[$index];
             }
         }
     }
     
     /**
-     * Si il y a des champs a mettre à jour
+     * Si il y a des champs modifiés
      * @return boolean
      */
-    public function isUpdate()
+    public function isNew($new = NULL)
     {
-        return (!empty($this->update));
+        if ($new !== NULL) {
+            return $this->new = $new;
+        }
+
+        return $this->new;
     }
-    
+
     /**
-     * Efface les champs a mettre à jour
+     * Vérifie si l'entité a changé
+     * @param type $index
+     * @return array|\Origami\Entity\Shema\Field|boolean
      */
-    public function cleanUpdate()
+    public function dirty($index = NULL, $force = FALSE)
     {
-        $this->update = array();
+        // Vérifie l'entité a changé
+        if ($index === NULL) {
+            return !empty($this->dirty);
+
+        // Vérifie si le champs a changé
+        } else if (isset($this->dirty[$index]) && $force === FALSE) {
+            return isset($this->dirty[$index]);
+
+        // Marque le champ comme modifié
+        } else if (isset($this->fields[$index]) && $force === TRUE) {
+            $this->fields[$index]->dirty();
+            return TRUE;
+
+        // Autrement
+        } else {
+            return FALSE;
+        }
     }
-    
+
+    /**
+     * Si il y a des champs modifiés
+     * @return boolean
+     */
+    public function isDirty()
+    {
+        return (!empty($this->dirty));
+    }
+
+    /**
+     * Efface les champs modifiés
+     * @return boolean
+     */
+    public function clean()
+    {
+        if (!$this->isDirty()) {
+            return FALSE;
+        }
+
+        foreach ($this->dirty as $name) {
+            $this->fields[$name]->clean();
+        }
+
+        $this->dirty = array();
+        
+        return TRUE;
+    }
+
+    /**
+     * Recherche la valeur d'un ou plusieurs champs
+     * @param type $index
+     * @return mixed
+     */
+    public function value($index = NULL)
+    {
+        if ($index === NULL) {
+            $fields = array();
+
+            foreach ($this->fields as $field) {
+                $fields[$field->getName()] = $field->getValue();
+            }
+
+            return $fields;
+            
+        } else if (isset($this->fields[$index])) {
+            return $this->fields[$index]->getValue();
+            
+        } else {
+            return FALSE;
+        }
+    }
+
     /**
      * Renseigne le gestionnaire d'erreur
      * @param \Origami\Entity\Manager\Config $config

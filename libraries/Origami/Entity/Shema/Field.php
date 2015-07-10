@@ -19,52 +19,120 @@ class Field
     const TYPE_STRING = 'string';
     const TYPE_DATE = 'date';
     const DATEFORMAT = 'Y-m-d H:i:s';
+    const DATEINSERT = 'date_insert';
+    const DATEUPDATE = 'date_dirty';
     const ALLOWNULL = 'allow_null';
     const ENCRYPT = 'encrypt';
     const BINARY = 'binary';
-    const NOW = 'now';
+    const DEFAULTVALUE_NOW = 'now';
 
+    /**
+     * Nom du champ
+     * @var string 
+     */
     private $name;
-    private $type;
-    private $date_format;
-    private $allow_null;
-    private $encrypt;
-    private $binary;
-    private $default_value;
-    private $value;
-    private $_oldvalue;
-    private $_update = FALSE;
 
+    /**
+     * Type de champ
+     * @var string 
+     */
+    private $type;
+
+    /**
+     * Nom du champ
+     * @var string 
+     */
+    private $date_format;
+
+    /**
+     * Si le champ peut être NULL
+     * @var boolean 
+     */
+    private $allow_null;
+
+    /**
+     * Si le champ est crypté
+     * @var boolean 
+     */
+    private $encrypt;
+
+    /**
+     * Si le champ est un binaire
+     * @var boolean 
+     */
+    private $binary;
+
+    /**
+     * La valeur par defaut du champ
+     * @var mixed 
+     */
+    private $default_value;
+
+    /**
+     * La valeur du champ
+     * @var mixed 
+     */
+    private $_value;
+
+    /**
+     * L'ancienne valeur du champ
+     * @var mixed 
+     */
+    private $_oldvalue;
+
+    /**
+     * Si il y a eu une modification de valeur
+     * @var boolean
+     */
+    private $_dirty = FALSE;
+
+    /**
+     * Constructeur
+     * @param array $config
+     * @param mixed $value
+     * @param boolean $silence
+     */
     public function __construct(array $config, $value = NULL, $silence = FALSE)
     {
-        // Charge la configuration du champ
+        // Parcours la configuration
         foreach ($config as $config_key => $config_value) {
-            $this->{$config_key} = $config_value;
+            // Si le paramètre existe
+            if (isset($this->{$config_key})) {
+                $this->{$config_key} = $config_value;
+            }
         }
 
         // Change la valeur du champ
         $this->setValue($value, $silence);
-
-        if (empty($this->type))
+        
+        // Si le type n'est pas défini
+        if (empty($this->type)) {
             $this->type = self::TYPE_STRING;
-
+        }
+        
+        // Si le type est une date
         if ($this->type === self::TYPE_DATE && empty($this->date_format)) {
             $this->date_format = self::DATEFORMAT;
         } else if (empty($this->date_format)) {
             $this->date_format = FALSE;
         }
-
-        if (empty($this->encrypt))
+        
+        // Si le champs doit être crypté
+        if (empty($this->encrypt)) {
             $this->encrypt = FALSE;
+        }
 
-        if (empty($this->binary))
+        if (empty($this->binary)) {
             $this->binary = FALSE;
+        }
 
-        if (empty($this->allow_null))
+        if (empty($this->allow_null)) {
             $this->allow_null = FALSE;
+        }
 
-        if (empty($this->default_value))
+        if (empty($this->default_value)) {
             $this->default_value = FALSE;
+        }
     }
 
     public function getName()
@@ -104,7 +172,7 @@ class Field
 
     public function getValue()
     {
-        return $this->value;
+        return $this->_value;
     }
 
     /**
@@ -118,28 +186,46 @@ class Field
         $value = $this->convert($value);
 
         // Si la valeur est différente
-        if ($value !== $this->value) {
+        if ($value !== $this->_value) {
             // Sauvegarde l'ancienne valeur
-            $this->_oldvalue = $this->value;
+            $this->_oldvalue = $this->_value;
 
             // Met a jour la nouvelle valeur
-            $this->value = $value;
+            $this->_value = $value;
 
             // Si le mode silence est désactivé
             if ($silence === FALSE) {
                 // Indique que le champ a été mis à jour
-                $this->_update = TRUE;
+                $this->_dirty = TRUE;
             }
         }
+    }
+    
+    /**
+     * Indique si le champ a été modifié
+     * @return boolean
+     */
+    public function dirty()
+    {
+        $this->_dirty = TRUE;
     }
 
     /**
      * Indique si le champ a été modifié
      * @return boolean
      */
-    public function isUpdate()
+    public function isDirty()
     {
-        return $this->_update;
+        return $this->_dirty;
+    }
+    
+    /**
+     * Indique que le champ n'a pas été modifié
+     * @return boolean
+     */
+    public function clean()
+    {
+        $this->_dirty = FALSE;
     }
 
     /**
@@ -151,7 +237,7 @@ class Field
     {
         // Si le champ a une valeur par défaut
         if (!empty($this->default_value) && empty($value)) {
-            if ($this->type === self::TYPE_DATE && $this->default_value === self::NOW) {
+            if ($this->type === self::TYPE_DATE && $this->default_value === self::DEFAULTVALUE_NOW) {
                 return date($this->date_format);
             } else {
                 return $this->default_value;
@@ -164,8 +250,13 @@ class Field
         }
 
         // Si le champ est de type date
-        if ($this->type === self::TYPE_DATE && !empty($value) && !empty($this->date_format)) {
-            return date($this->date_format, strtotime($value));
+        if ($this->type === self::TYPE_DATE && !empty($value)) {            
+            // Si la valeur est un objet DateTime
+            if ($value instanceof \DateTime)  {
+                return $value->format($this->date_format);
+            } else {
+                return date($this->date_format, strtotime($value));
+            }
         }
 
         // Cast la valeur

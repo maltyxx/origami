@@ -305,14 +305,11 @@ class Query
             $objects = array();
 
             foreach ($results as $result) {
+                // Nom de la classe
                 $class = $this->config->getClass();
-                $object = new $class();
-
-                foreach ($result as $key => $value) {
-                    $object->getStorage()->set($key, $value, TRUE);
-                }
-
-                $objects[] = $object;
+                
+                // Creer le tableau de résultat
+                $objects[] = new $class($result, FALSE, TRUE);
             }
 
             return $objects;
