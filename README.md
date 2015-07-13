@@ -17,8 +17,8 @@ composer update
 ```
 ### Step 2 Create files
 ```txt
-/application/controllers/origami_generator.php for CodeIgniter 3
-/application/controllers/Origami_generator.php for CodeIgniter 2
+/application/controllers/origami_generator.php for CodeIgniter 2
+/application/controllers/Origami_generator.php for CodeIgniter 3
 ```
 ```php
 <?php
