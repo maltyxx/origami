@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity;
+namespace Origami;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -10,8 +10,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link https://github.com/maltyxx/origami
  */
-class Core extends \Origami\Entity\Factory
+class Entity
 {
+	/**
+     * Table
+     * @var string $table
+     */
+	protected static $table;
+	
+    /**
+     * Clé primaire
+     * @var string $primary_key
+     */
+	protected static $primary_key;
+	
+    /**
+     * Champs
+     * @var array $fields
+     */
+	protected static $fields = array();
+	
+    /**
+     * Associations
+     * @var array $associations
+     */
+	protected static $associations = array();
+	
+    /**
+     * Validations
+     * @var array $validations
+     */
+	protected static $validations = array();
+	
     /**
      * Gestionnaire de configuration
      * @var \Origami\Entity\Manager\Config 
@@ -41,7 +71,100 @@ class Core extends \Origami\Entity\Factory
      * @var \Origami\Entity\Manager\Validator
      */
     protected $_validator;
+	
+	/**
+	 * Factory
+	 * @param string $name
+	 * @param array $arguments
+	 * @return \Origami\Entity\Manager\Query
+	 */
+	public static function __callStatic($name, $arguments = array()) {
+		        
+        $config = new \Origami\Entity\Manager\Config(self::entity());
+       
+		// Si c'est une requête
+		if (method_exists('\Origami\Entity\Manager\Query', $name)) {
+			
+			$query = new \Origami\Entity\Manager\Query($config);
+			
+			return call_user_func_array(array($query, $name), $arguments);
+		}
+	}
+	
+	/**
+     * Configuration général
+     * @return array
+     */
+	public static function origami()
+    {
+        $CI =& get_instance();
+		
+		return (isset($CI->origami) && $CI->origami instanceof \Origami) ? $CI->origami->getConfig() : array();
+    }
+	
+	/**
+     * Nom de la classe
+     * @return string
+     */
+    public static function entity()
+    {
+        return get_called_class();
+    }
 
+    /**
+     * Nom de la base de donnée
+     * @return string
+     */
+    public static function database()
+    {
+        return explode('\\', self::entity())[1];
+    }
+	
+	/**
+     * Nom de la table
+     * @return string
+     */
+    public static function table()
+    {
+        return static::$table;
+    }
+
+    /**
+     * Nom de la clé primaire
+     * @return string
+     */
+    public static function primaryKey()
+    {
+        return static::$primary_key;
+    }
+
+    /**
+     * Liste des champs
+     * @return array
+     */
+    public static function fields()
+    {
+        return static::$fields;
+    }
+
+    /**
+     * Liste des associations
+     * @return array
+     */
+    public static function associations()
+    {
+        return static::$associations;
+    }
+
+    /**
+     * liste des validateurs
+     * @return array
+     */
+    public static function validations()
+    {
+        return static::$validations;
+    }
+	
     /**
      * Constructeur
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
@@ -63,8 +186,8 @@ class Core extends \Origami\Entity\Factory
         // Gestionnaire de validation
         $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
         
-        // Indique si c'est une nouvelle instance
-        $this->_storage->is_new($new);
+        // Si c'est une nouvelle instance
+        $this->_storage->isNew($new);
 
         // Si la variable $data est un entier, c'est une clé primaire
         if (is_numeric($data)) {
@@ -122,7 +245,7 @@ class Core extends \Origami\Entity\Factory
     }
 
     /**
-     * Retourne la relation avec un autre modèle
+     * Relation
      * @param string $name
      * @param array $arguments
      * @return Entity\Db\Query
@@ -131,10 +254,10 @@ class Core extends \Origami\Entity\Factory
     {
         if (($association = $this->_association->get($name)) !== FALSE) {                
             // Créer une association
-            $entity = $association->associated();
+            $instance = $association->associated();
 
             // Retourne le gestionnaire de requête 
-            return $entity->query();
+            return $instance->query();
 
             // Sinon, il y a une erreur
         } else {
@@ -271,7 +394,7 @@ class Core extends \Origami\Entity\Factory
         $has_insert = (empty($field_value) || $force_insert === TRUE);
         
         // Si il y a pas de changement
-        if ($this->_storage->isDirty() === FALSE) {
+        if ($this->_storage->dirty() === FALSE) {
             return FALSE;
         }
 
@@ -362,12 +485,11 @@ class Core extends \Origami\Entity\Factory
      */
     private function write()
     {
-        // Les champs à mettre à jour
-        $fields = $this->_storage->getUpdate();
+        // Liste des champs modifiés
+        $fields = $this->_storage->dirtyField();
 
-        // Si il y a des champs a updater        
+        // Si il y a des champs modifiés
         if (!empty($fields)) {
-            // Champs a mettre à jour
             foreach ($fields as $field) {
                 // Si le cryptage est activé et qu'il y a des champs crypté
                 if ($this->_config->getOrigami('encryption_enable') && $field->getEncrypt()) {

@@ -19,7 +19,7 @@ class Storage
     private $fields = array();
 
     /**
-     * Liste des champs modifié
+     * Liste des champs modifiés
      * @var array $dirty
      */
     private $dirty = array();
@@ -92,7 +92,7 @@ class Storage
 
         return $this->new;
     }
-
+	
     /**
      * Vérifie si l'entité a changé
      * @param type $index
@@ -118,14 +118,26 @@ class Storage
             return FALSE;
         }
     }
-
-    /**
-     * Si il y a des champs modifiés
-     * @return boolean
+	
+	/**
+     * Retourne les champs modifié
+     * @param type $index
+     * @return array|\Origami\Entity\Shema\Field|boolean
      */
-    public function isDirty()
+    public function dirtyField($index = NULL)
     {
-        return (!empty($this->dirty));
+        // Vérifie l'entité a changé
+        if ($index === NULL) {
+            return $this->dirty;
+
+        // Vérifie si le champs a changé
+        } else if (isset($this->dirty[$index])) {
+            return $this->dirty[$index];
+
+        // Autrement
+        } else {
+            return FALSE;
+        }
     }
 
     /**
@@ -134,7 +146,7 @@ class Storage
      */
     public function clean()
     {
-        if (!$this->isDirty()) {
+        if (!empty($this->dirty)) {
             return FALSE;
         }
 

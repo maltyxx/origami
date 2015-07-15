@@ -3,7 +3,7 @@ namespace Entity\test;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class user extends \Origami\Entity\Core {
+class user extends \Origami\Entity {
 
 	public static $table = 'user';
 

@@ -2,8 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require(__DIR__.'/DB.php');
-require(__DIR__.'/Entity/Factory.php');
-require(__DIR__.'/Entity/Core.php');
+require(__DIR__.'/Entity.php');
 require(__DIR__.'/Entity/Manager/Config.php');
 require(__DIR__.'/Entity/Manager/Query.php');
 require(__DIR__.'/Entity/Manager/Storage.php');
