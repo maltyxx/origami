@@ -43,17 +43,28 @@ class Storage
     /**
      * Recherche un ou plusieurs champs
      * @param string|NULL $index
+     * @param boolean $dirty
      * @return array|\Origami\Entity\Shema\Field|boolean
      */
-    public function get($index = NULL)
+    public function get($index = NULL, $dirty = FALSE)
     {
-        if ($index === NULL) {
-            return $this->fields;
-        } else if (isset($this->fields[$index])) {
-            return $this->fields[$index];
-        } else {
-            return FALSE;
-        }
+        if ($dirty === TRUE) {
+			if ($index === NULL) {
+				return $this->dirty;
+			} else if (isset($this->dirty[$index])) {
+				return $this->dirty[$index];
+			} else {
+				return FALSE;
+			}
+		} else {
+			if ($index === NULL) {
+				return $this->fields;
+			} else if (isset($this->fields[$index])) {
+				return $this->fields[$index];
+			} else {
+				return FALSE;
+			}
+		}
     }
 
     /**
@@ -72,16 +83,20 @@ class Storage
             // Si l'index n'est pas un tableau
         } else if (isset($this->fields[$index])) {
             $this->fields[$index]->setValue($value, $silence);
+			
             // Si le mode silence est désactivé et si la valeur a changé
             if ($silence === FALSE && $this->fields[$index]->isDirty()) {
+				// Passe le champ en dirty
                 $this->fields[$index]->dirty();
+				
+				// Copie le champ en dirty
                 $this->dirty[$index] = $this->fields[$index];
             }
         }
     }
     
     /**
-     * Si il y a des champs modifiés
+     * Si l'entité est nouvelle
      * @return boolean
      */
     public function isNew($new = NULL)
@@ -112,27 +127,6 @@ class Storage
         } else if (isset($this->fields[$index]) && $force === TRUE) {
             $this->fields[$index]->dirty();
             return TRUE;
-
-        // Autrement
-        } else {
-            return FALSE;
-        }
-    }
-	
-	/**
-     * Retourne les champs modifié
-     * @param type $index
-     * @return array|\Origami\Entity\Shema\Field|boolean
-     */
-    public function dirtyField($index = NULL)
-    {
-        // Vérifie l'entité a changé
-        if ($index === NULL) {
-            return $this->dirty;
-
-        // Vérifie si le champs a changé
-        } else if (isset($this->dirty[$index])) {
-            return $this->dirty[$index];
 
         // Autrement
         } else {

@@ -97,11 +97,11 @@ class Field
         // Parcours la configuration
         foreach ($config as $config_key => $config_value) {
             // Si le paramètre existe
-            if (isset($this->{$config_key})) {
+            if (property_exists($this, $config_key)) {
                 $this->{$config_key} = $config_value;
-            }
+			}
         }
-
+		
         // Change la valeur du champ
         $this->setValue($value, $silence);
         
