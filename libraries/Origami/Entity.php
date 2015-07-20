@@ -252,11 +252,11 @@ class Entity
      */
     public function __call($name, $arguments = array())
     {
-        if (($association = $this->_association->get($name)) !== FALSE) {                
+        if (($association = $this->_association->get($name)) !== FALSE) {
             // Créer une association
             $instance = $association->associated();
 
-            // Retourne le gestionnaire de requête 
+            // Retourne le gestionnaire de requête
             return $instance->query();
 
             // Sinon, il y a une erreur
@@ -264,7 +264,7 @@ class Entity
             exit("Origami a rencontré un problème : L'association '$name' est introuvable dans le modèle ".self::entity().PHP_EOL);
         }
     }
-    
+
     /**
      * Retourne les résultats dans un tableau associatif
      * @param string $index
@@ -274,7 +274,7 @@ class Entity
     {
         return $this->_storage->value($index);
     }
-    
+
     /**
      * Retourne les résultats dans un tableau associatif
      * @param string $index
@@ -284,7 +284,7 @@ class Entity
     {
         return $this->_storage->value();
     }
-    
+
     /**
      * Retourne les résultats au format JSON
      * @param string $index
@@ -294,7 +294,7 @@ class Entity
     {
         return json_encode($this->_storage->value());
     }
-    
+
     /**
      * Modifie un ou plusieurs champs
      * @param type $index
@@ -313,7 +313,7 @@ class Entity
     {
         return $this->_config;
     }
-    
+
     /**
      * Retourne le gestionnaire de requête
      * @return Entity\Db\Query
@@ -322,7 +322,7 @@ class Entity
     {
         return $this->_query;
     }
-    
+
     /**
      * Retourne le gestionnaire de stockage
      * @return Entity\Data\Storage
@@ -349,7 +349,7 @@ class Entity
     {
         return $this->_validator->is_valid();
     }
-    
+
     /**
      * Vérifie si l'entité a changé
      * @param type $index
@@ -359,7 +359,7 @@ class Entity
     {
         return $this->_storage->dirty($index, $force);
     }
-    
+
     /**
      * Efface les champs modifiés
      * @return boolean
@@ -368,7 +368,7 @@ class Entity
     {
         return $this->_storage->clean($index);
     }
-    
+
     /**
      * Vérifie si une entité a été Sauvegardée
      * @return boolean
@@ -440,7 +440,7 @@ class Entity
         }
         
         // Change le status de l'entité
-        if ($query === TRUE && $this->_storage->is_new()) {
+        if ($query === TRUE && $this->_storage->isNew()) {
             $this->_storage->isNew(FALSE);
         }
 
@@ -486,7 +486,7 @@ class Entity
     private function write()
     {
         // Liste des champs modifiés
-        $fields = $this->_storage->dirtyField();
+        $fields = $this->_storage->get(NULL, TRUE);
 
         // Si il y a des champs modifiés
         if (!empty($fields)) {
