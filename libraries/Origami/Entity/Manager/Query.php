@@ -249,14 +249,37 @@ class Query
 
         return $this;
     }
-	
+
+    /**
+     * Créer une jointure en SQL
+     * @param \Origami\Entity $entity
+     * @param string|null $cond
+     * @param string|null $type
+     * @param string|null $escape
+     * @return \Origami\Entity\Manager\Query
+     */
+    public function join($entity, $cond = NULL, $type = NULL, $escape = NULL)
+    {
+        if ($cond === NULL) {
+            $cond = "{$entity::table()}.{$this->config->getTable()}_{$this->config->getPrimaryKey()} = {$this->config->getTable()}.{$this->config->getPrimaryKey()}";
+        }
+
+        if ($type === NULL) {
+            $type = "";
+        }
+
+        \Origami\DB::get($this->config->getDataBase())->join($entity::table(), $cond, $type, $escape);
+
+        return $this;
+    }
+
 	/**
      * Requête de lecture
      */
     private function select()
     {
         // Par défault utilise un select *
-        \Origami\DB::get($this->config->getDataBase())->select('*');
+        \Origami\DB::get($this->config->getDataBase())->select("{$this->config->getTable()}.*");
         
         // Si le cryptage est activé et si il y a des champs cryptés
         if ($this->config->getOrigami('encryption_enable')) {
@@ -295,7 +318,7 @@ class Query
     {
         // Requête
         $results = $this->select()->from($this->config->getTable())->get()->result_array();
-
+        
         // Si il y a pas de résultat
         if (empty($results)) {
             return array();
@@ -307,9 +330,12 @@ class Query
             foreach ($results as $result) {
                 // Nom de la classe
                 $class = $this->config->getClass();
-                
+
                 // Creer le tableau de résultat
-                $objects[] = new $class($result, FALSE, TRUE);
+                $objects[] = new $class($result, array(
+                    'new' => TRUE,
+                    'silence' => FALSE
+                ));
             }
 
             return $objects;

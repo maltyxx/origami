@@ -21,12 +21,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     public function index()
     {
-        $this->unit->run($this->test_model->add(), TRUE, "Insert");
+        $this->unit->run($this->test_model->add(), TRUE, "Insert + Transaction");
         $this->unit->run($this->test_model->add_user_address(), TRUE, "Insert + cryptage");
         $this->unit->run($this->test_model->add_user_file(), TRUE, "Insert + binaire");
-        $this->unit->run($this->test_model->get()->toArray(), 'is_array', "Select");
-        $this->unit->run($this->test_model->get_user_address()->toArray(), 'is_array', "Select + relation + cryptage");
-        $this->unit->run($this->test_model->get_user_file()->toArray(), 'is_array', "Select + binaire");
+        $this->unit->run($this->test_model->get(), 'is_array', "Select");        
+        $this->unit->run($this->test_model->get_join(), 'is_array', "Select + Join");
+        $this->unit->run($this->test_model->get_user_address(), 'is_array', "Select + relation + cryptage");
+        $this->unit->run($this->test_model->get_user_file(), 'is_array', "Select + binaire");
         $this->unit->run($this->test_model->del(), TRUE, "Delete");
         $this->output->set_output($this->unit->report());
     }

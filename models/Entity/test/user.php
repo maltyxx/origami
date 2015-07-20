@@ -17,7 +17,10 @@ class user extends \Origami\Entity {
 		array('name' => 'id', 'type' => 'int'),
 		array('name' => 'lastname', 'type' => 'string'),
 		array('name' => 'firstname', 'type' => 'string'),
-		array('name' => 'password', 'type' => 'string')
+		array('name' => 'password', 'type' => 'string'),
+		array('name' => 'birth', 'type' => 'date', 'date_format' => 'Y-m-d'),
+		array('name' => 'dateinsert', 'type' => 'date'),
+		array('name' => 'dateupdate', 'type' => 'date')
 	);
 
 	public static $primary_key = 'id';

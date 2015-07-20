@@ -19,8 +19,6 @@ class Field
     const TYPE_STRING = 'string';
     const TYPE_DATE = 'date';
     const DATEFORMAT = 'Y-m-d H:i:s';
-    const DATEINSERT = 'date_insert';
-    const DATEUPDATE = 'date_dirty';
     const ALLOWNULL = 'allow_null';
     const ENCRYPT = 'encrypt';
     const BINARY = 'binary';
@@ -202,30 +200,21 @@ class Field
     }
     
     /**
-     * Indique si le champ a été modifié
+     * Si le champ a été modifié
      * @return boolean
      */
     public function dirty()
     {
-        $this->_dirty = TRUE;
+        return $this->_dirty;
     }
 
     /**
-     * Indique si le champ a été modifié
-     * @return boolean
+     * Change l'état du champ
+     * @param boolean $value
      */
-    public function isDirty()
+    public function setDirty($value)
     {
-        return $this->_dirty;
-    }
-    
-    /**
-     * Indique que le champ n'a pas été modifié
-     * @return boolean
-     */
-    public function clean()
-    {
-        $this->_dirty = FALSE;
+        $this->_dirty = $value;
     }
 
     /**

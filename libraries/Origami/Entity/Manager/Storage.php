@@ -20,10 +20,10 @@ class Storage
 
     /**
      * Liste des champs modifiés
-     * @var array $dirty
+     * @var array $modified
      */
-    private $dirty = array();
-    
+    private $modified = array();
+
     /**
      * Si une entité a été Sauvegardée
      * @var boolean
@@ -50,9 +50,9 @@ class Storage
     {
         if ($dirty === TRUE) {
 			if ($index === NULL) {
-				return $this->dirty;
-			} else if (isset($this->dirty[$index])) {
-				return $this->dirty[$index];
+				return $this->modified;
+			} else if (isset($this->modified[$index])) {
+				return $this->modified[$index];
 			} else {
 				return FALSE;
 			}
@@ -83,20 +83,20 @@ class Storage
             // Si l'index n'est pas un tableau
         } else if (isset($this->fields[$index])) {
             $this->fields[$index]->setValue($value, $silence);
-			
+            
             // Si le mode silence est désactivé et si la valeur a changé
-            if ($silence === FALSE && $this->fields[$index]->isDirty()) {
+            if ($silence === FALSE && $this->fields[$index]->dirty()) {
 				// Passe le champ en dirty
-                $this->fields[$index]->dirty();
-				
-				// Copie le champ en dirty
-                $this->dirty[$index] = $this->fields[$index];
+                $this->fields[$index]->setDirty(TRUE);
+
+				// Lie les champs
+                $this->modified[$index] =& $this->fields[$index];
             }
         }
     }
-    
+
     /**
-     * Si l'entité est nouvelle
+     * Si l'entité est nouvelle instance
      * @return boolean
      */
     public function isNew($new = NULL)
@@ -117,15 +117,15 @@ class Storage
     {
         // Vérifie l'entité a changé
         if ($index === NULL) {
-            return !empty($this->dirty);
+            return !empty($this->modified);
 
         // Vérifie si le champs a changé
-        } else if (isset($this->dirty[$index]) && $force === FALSE) {
-            return isset($this->dirty[$index]);
+        } else if (isset($this->modified[$index]) && $force === FALSE) {
+            return isset($this->modified[$index]);
 
         // Marque le champ comme modifié
         } else if (isset($this->fields[$index]) && $force === TRUE) {
-            $this->fields[$index]->dirty();
+            $this->fields[$index]->setDirty(TRUE);
             return TRUE;
 
         // Autrement
@@ -140,16 +140,16 @@ class Storage
      */
     public function clean()
     {
-        if (!empty($this->dirty)) {
+        if (!empty($this->modified)) {
             return FALSE;
         }
 
-        foreach ($this->dirty as $name) {
-            $this->fields[$name]->clean();
+        foreach ($this->modified as $name) {
+            $this->fields[$name]->setDirty(FALSE);
         }
 
-        $this->dirty = array();
-        
+        $this->modified = array();
+
         return TRUE;
     }
 
@@ -168,10 +168,10 @@ class Storage
             }
 
             return $fields;
-            
+
         } else if (isset($this->fields[$index])) {
             return $this->fields[$index]->getValue();
-            
+
         } else {
             return FALSE;
         }

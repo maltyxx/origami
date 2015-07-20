@@ -168,9 +168,16 @@ class Entity
     /**
      * Constructeur
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
+     * @param array $options
      */
-    function __construct($data = NULL, $new = TRUE, $silence = FALSE)
+    function __construct($data = NULL, $options = array())
     {
+        // Options
+        $options = array_merge(array(
+            'new' => TRUE,
+            'silence' => FALSE
+        ), $options);
+        
         // Gestinnaire de configuation
         $this->_config = new \Origami\Entity\Manager\Config(self::entity());
         
@@ -187,7 +194,7 @@ class Entity
         $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
         
         // Si c'est une nouvelle instance
-        $this->_storage->isNew($new);
+        $this->_storage->isNew($options['new']);
 
         // Si la variable $data est un entier, c'est une clé primaire
         if (is_numeric($data)) {
@@ -209,7 +216,7 @@ class Entity
 
             // Si la variable $data est un tableau
         } else if (is_array($data) && !empty($data)) {
-            $this->_storage->set($data, NULL, $silence);
+            $this->_storage->set($data, NULL, $options['silence']);
         }
         
     }
@@ -245,13 +252,14 @@ class Entity
     }
 
     /**
-     * Relation
+     * Relation avec une entité
      * @param string $name
      * @param array $arguments
      * @return Entity\Db\Query
      */
     public function __call($name, $arguments = array())
     {
+        // Si il sagit d'une relation
         if (($association = $this->_association->get($name)) !== FALSE) {
             // Créer une association
             $instance = $association->associated();
@@ -259,12 +267,12 @@ class Entity
             // Retourne le gestionnaire de requête
             return $instance->query();
 
-            // Sinon, il y a une erreur
+        // Si il sagit d'une requête
         } else {
             exit("Origami a rencontré un problème : L'association '$name' est introuvable dans le modèle ".self::entity().PHP_EOL);
         }
     }
-
+    
     /**
      * Retourne les résultats dans un tableau associatif
      * @param string $index
@@ -273,6 +281,16 @@ class Entity
     public function get($index = NULL)
     {
         return $this->_storage->value($index);
+    }
+
+    /**
+     * Modifie un ou plusieurs champs
+     * @param type $index
+     * @param type $value
+     * @param boolean $silence
+     */
+    public function set($index, $value = NULL, $silence = FALSE) {
+        $this->_storage->set($index, $value, $silence);
     }
 
     /**
@@ -294,17 +312,7 @@ class Entity
     {
         return json_encode($this->_storage->value());
     }
-
-    /**
-     * Modifie un ou plusieurs champs
-     * @param type $index
-     * @param type $value
-     * @param boolean $silence
-     */
-    public function set($index, $value = NULL, $silence = FALSE) {
-        $this->_storage->set($index, $value, $silence);
-    }
-
+    
     /**
      * Retourne le gestionnaire de configuration
      * @return Entity\Config
@@ -348,6 +356,19 @@ class Entity
     public function isValid()
     {
         return $this->_validator->is_valid();
+    }
+    
+    /**
+     * Jointure avec une entité
+     * @param \Origami\Entity $entity
+     * @param string|null $cond
+     * @param string|null $type
+     * @param string|null $escape
+     * @return \Origami\Entity\Manager\Query
+     */
+    public function join($entity, $cond = NULL, $type = NULL, $escape = NULL)
+    {
+        return $this->_query->join($entity, $cond, $type, $escape);
     }
 
     /**
