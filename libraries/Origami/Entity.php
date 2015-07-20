@@ -16,31 +16,31 @@ class Entity
      * Table
      * @var string $table
      */
-	protected static $table;
+	public static $table;
 	
     /**
      * Clé primaire
      * @var string $primary_key
      */
-	protected static $primary_key;
+	public static $primary_key;
 	
     /**
      * Champs
      * @var array $fields
      */
-	protected static $fields = array();
+	public static $fields = array();
 	
     /**
      * Associations
      * @var array $associations
      */
-	protected static $associations = array();
+	public static $associations = array();
 	
     /**
      * Validations
      * @var array $validations
      */
-	protected static $validations = array();
+	public static $validations = array();
 	
     /**
      * Gestionnaire de configuration
