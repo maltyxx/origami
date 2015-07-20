@@ -133,41 +133,73 @@ class Field
         }
     }
 
+    /**
+     * Retourne le nom
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
-
+    
+    /**
+     * Retourne le type
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * Retourne le format de la date
+     * @return string
+     */
     public function getDateFormat()
     {
         return $this->date_format;
     }
 
+    /**
+     * Si le champ peut avoir une valeur à null
+     * @return string
+     */
     public function getAllowNull()
     {
         return $this->allow_null;
     }
 
+    /**
+     * Si le champ est crypté
+     * @return string
+     */
     public function getEncrypt()
     {
         return $this->encrypt;
     }
-
+    
+    /**
+     * Si le champ est un binaire
+     * @return string
+     */
     public function getBinary()
     {
         return $this->binary;
     }
 
+    /**
+     * Retourne la valeur par défaut
+     * @return string
+     */
     public function getDefaultValue()
     {
         return $this->default_value;
     }
 
+    /**
+     * Retourne la valeur
+     * @return string
+     */
     public function getValue()
     {
         return $this->_value;
@@ -265,5 +297,5 @@ class Field
 
 }
 
-/* End of file Orm_field.php */
-/* Location: ./application/libraries/Orm_field.php */
+/* End of file Field.php */
+/* Location: ./libraries/Origami/Entity/Shema/Field.php */

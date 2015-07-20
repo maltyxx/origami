@@ -47,48 +47,113 @@ class Validation
      * @var string 
      */
     public $type;
+    
+    /**
+     * Nombre minimum de caractère
+     * @var integer 
+     */
     public $min;
+    
+    /**
+     * Nombre maximum de caractère
+     * @var integer 
+     */
     public $max;
+    
+    /**
+     * Liste de valeur
+     * @var array 
+     */
     public $list;
+    
+    /**
+     * Expression régulière
+     * @var string 
+     */
     public $matcher;
+    
+    /**
+     * Function externe
+     * @var string 
+     */
     public $callback;
+    
+    /**
+     * Message d'erreur
+     * @var string 
+     */
     public $message;
-
+    
+    /**
+     * Constructeur
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         // Instance de CodeIgniter
-        $this->CI = & get_instance();
+        $this->CI = &get_instance();
 
-        foreach ($config as $config_key => $config_value) {
+        // Si le paramètre existe
+        if (property_exists($this, $config_key)) {
             $this->{$config_key} = $config_value;
         }
     }
 
+    /**
+     * Vérifie si la valeur est une adresse email
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_email($value)
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 
+    /**
+     * Vérifie si la valeur est une url
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_url($value)
     {
         return filter_var($value, FILTER_VALIDATE_URL);
     }
 
+    /**
+     * Vérifie si la valeur est une adress ip
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_ip($value)
     {
         return filter_var($value, FILTER_VALIDATE_IP);
     }
 
+    /**
+     * Vérifie si la valeur est un entier
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_int($value)
     {
         return filter_var($value, FILTER_VALIDATE_INT);
     }
 
+    /**
+     * Vérifie si la valeur est un nombre flotant
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_float($value)
     {
         return filter_var($value, FILTER_VALIDATE_FLOAT);
     }
 
+    /**
+     * Vérifie si la valeur est exclut d'une liste
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_exclusion($value)
     {
         if (!is_array($this->list))
@@ -97,6 +162,11 @@ class Validation
         return !in_array($value, $this->list);
     }
 
+     /**
+     * Vérifie si la valeur est inclut d'une liste
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_inclusion($value)
     {
         if (!is_array($this->list))
@@ -105,6 +175,11 @@ class Validation
         return in_array($value, $this->list);
     }
 
+    /**
+     * Vérifie si la valeur est exclut d'une liste
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_format($value)
     {
         if (empty($this->matcher))
@@ -113,11 +188,21 @@ class Validation
         return preg_match($this->matcher, $value);
     }
 
+    /**
+     * Vérifie si la valeur est une date
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_date($value)
     {
         return checkdate(date('m', strtotime($value)), date('d', strtotime($value)), date('Y', strtotime($value)));
     }
 
+    /**
+     * Vérifie si la valeur est compris entre un min et un max
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_length($value)
     {
         if (empty($value))
@@ -132,6 +217,11 @@ class Validation
         }
     }
 
+    /**
+     * Vérifie si la valeur est présente
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_presence($value)
     {
         if (empty($value)) {
@@ -141,6 +231,11 @@ class Validation
         }
     }
 
+    /**
+     * Vérifie la valeur par une fonction externe
+     * @param mixed $value
+     * @return boolean
+     */
     private function check_callback($value)
     {
         return call_user_func_array(array($this->callback), array($value, &$this));
@@ -167,5 +262,5 @@ class Validation
 
 }
 
-/* End of file Orm_validation.php */
-/* Location: ./application/libraries/Orm_validation.php */
+/* End of file Validation.php */
+/* Location: ./libraries/Origami/Entity/Shema/Validation.php */
