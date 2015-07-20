@@ -156,8 +156,9 @@ class Validation
      */
     private function check_exclusion($value)
     {
-        if (!is_array($this->list))
+        if (!is_array($this->list)) {
             return FALSE;
+        }
 
         return !in_array($value, $this->list);
     }
@@ -169,8 +170,9 @@ class Validation
      */
     private function check_inclusion($value)
     {
-        if (!is_array($this->list))
+        if (!is_array($this->list))  {
             return FALSE;
+        }
 
         return in_array($value, $this->list);
     }
@@ -182,8 +184,9 @@ class Validation
      */
     private function check_format($value)
     {
-        if (empty($this->matcher))
+        if (empty($this->matcher)) {
             return FALSE;
+        }
 
         return preg_match($this->matcher, $value);
     }
@@ -205,8 +208,9 @@ class Validation
      */
     private function check_length($value)
     {
-        if (empty($value))
+        if (empty($value)) {
             return FALSE;
+        }
 
         $length = strlen($value);
 
