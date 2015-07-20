@@ -401,18 +401,23 @@ class Entity
 
     /**
      * Sauvegarde les valeurs de l'entité en base de donnée
-     * @param boolean $replace
-     * @param boolean $force_insert
+     * @param array $options
      * @return boolean
      */
-    public function save($replace = FALSE, $force_insert = FALSE)
+    public function save($options = array())
     {
+        // Options
+        $options = array_merge(array(
+            'replace' => FALSE,
+            'force_insert' => FALSE
+        ), $options);
+        
         // Clé primaire
         $field = $this->_storage->get($this->_config->getPrimaryKey());
         $field_value = $field->getValue();
 
         // Si la la requête doit être de type INSERT
-        $has_insert = (empty($field_value) || $force_insert === TRUE);
+        $has_insert = (empty($field_value) || $options['force_insert'] === TRUE);
         
         // Si il y a pas de changement
         if ($this->_storage->dirty() === FALSE) {
@@ -423,7 +428,7 @@ class Entity
         $query = FALSE;
 
         // Si la requete est de type replace
-        if ($replace) {
+        if ($options['replace']) {
             // Exécute la requête
             $query = $this
                 ->write()
