@@ -422,7 +422,7 @@ class Origami_generator extends CI_Controller {
             $this->_append('}'."\r\n");
             $this->_append("\r\n");
                
-            $file_path = APPPATH.'/models/entities/'.$namespace.'/'.$file_name;
+            $file_path = APPPATH.'/models/Entity/'.$namespace.'/'.$file_name;
             
             if (touch($file_path)) {
                 file_put_contents($file_path, $this->entity_output);
@@ -451,10 +451,10 @@ class Origami_generator extends CI_Controller {
             echo "<h1>Base de donnée <strong>$namespace</strong></h1><br />";
                         
             // Création du répertoire
-            $this->_dir(APPPATH.'models/entities/'.$namespace);
+            $this->_dir(APPPATH.'models/Entity/'.$namespace);
 
             // Récupère les données des anciens modèles
-            $this->_save_override(APPPATH.'models/entities/'.$namespace.'/*');
+            $this->_save_override(APPPATH.'models/Entity/'.$namespace.'/*');
             
             // Stock la nouvelle connexion à la base de donnée
             $this->{"db_$namespace"} = $this->load->database($namespace, TRUE);
