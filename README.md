@@ -8,18 +8,9 @@ Object Relational Mapping for Codeigniter 3
 
 ## Installation
 ### Step 1 Installation by Composer
-Create composer.json file in your application's root if there is none. Add the following text in the file:
-#### Edit /composer.json
-```json
-{
-    "require": {
-        "maltyxx/origami": "dev-master"
-    }
-}
-```
-#### Run composer update
+#### Run composer
 ```shell
-composer update
+composer require maltyxx/origami
 ```
 
 ### Step 2 Create files
