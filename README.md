@@ -23,9 +23,7 @@ composer update
 ```
 
 ### Step 2 Create files
-```txt
 Create controller file in `/application/controllers/Origami_generator.php`.
-```
 ```php
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -33,9 +31,7 @@ require(APPPATH.'/third_party/origami/controllers/Origami_generator.php');
 ```
 
 ### Step 3 Configuration
-```txt
 Duplicate configuration file `./application/third_party/origami/config/origami.php` in `./application/config/origami.php`.
-```
 
 ### Step 4 Examples
 Model file is located in `/application/models/User_model.php`.
