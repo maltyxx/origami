@@ -202,7 +202,7 @@ class Entity
             $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
 
             // Si l'objet est trouvé
-            if ($object instanceof \Origami\Entity\Entity) {
+            if ($object instanceof \Origami\Entity) {
                 // Indique que ce n'est pas une nouvelle instance
                 $this->_storage->isNew(FALSE);
                 

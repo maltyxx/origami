@@ -61,6 +61,7 @@ class Test_model extends CI_Model
     public function get()
     {
         $user = \Entity\test\user::find_one();
+        $user = new \Entity\test\user($user->id);
         
         return $user->toArray();
     }
