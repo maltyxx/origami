@@ -269,7 +269,11 @@ class Entity
 
         // Si il sagit d'une requête
         } else {
-            exit("Origami a rencontré un problème : L'association '$name' est introuvable dans le modèle ".self::entity().PHP_EOL);
+            $error = "Origami a rencontré un problème :"
+                ." L'association '$name' est introuvable dans le modèle ".self::entity().", "
+                ." ligne :".debug_backtrace()[1]['line']." fichier : ".debug_backtrace()[1]['file'];
+
+            exit($error.PHP_EOL);
         }
     }
     
