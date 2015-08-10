@@ -161,8 +161,8 @@ class Origami_generator extends CI_Controller {
 
                         // STOCKAGE DES RELATION INVERSES						
                         $referenced_table_name_t = strtolower($table['Name']);
-                        $this->association[$referenced_table_name]['php'][] = "\t\tarray('association_key' => '$referenced_table_name_t', 'entity' => '\\Origami\\Entity\\$namespace\\{$table['Name']}', 'type' => '{$relation_inverse[$relation_type]}', 'primary_key' => 'id', 'foreign_key' => '{$data["COLUMN_NAME"]}'),\r\n";
-                        $this->association[$referenced_table_name]['javadoc'][] = "\t * @method \\Origami\\Entity\\$namespace\\$referenced_table_name_t $referenced_table_name_t() {$relation_inverse[$relation_type]}\r\n";
+                        $this->association[$referenced_table_name]['php'][] = "\t\tarray('association_key' => '$referenced_table_name_t', 'entity' => '\\Entity\\$namespace\\{$table['Name']}', 'type' => '{$relation_inverse[$relation_type]}', 'primary_key' => 'id', 'foreign_key' => '{$data["COLUMN_NAME"]}'),\r\n";
+                        $this->association[$referenced_table_name]['javadoc'][] = "\t * @method \\Entity\\$namespace\\$referenced_table_name_t $referenced_table_name_t() {$relation_inverse[$relation_type]}\r\n";
                     }
                 }
             }
