@@ -164,7 +164,7 @@ class Entity
     {
         return static::$validations;
     }
-	
+
     /**
      * Constructeur
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
@@ -172,53 +172,7 @@ class Entity
      */
     function __construct($data = NULL, $options = array())
     {
-        // Options
-        $options = array_merge(array(
-            'new' => TRUE,
-            'silence' => FALSE
-        ), $options);
-        
-        // Gestinnaire de configuation
-        $this->_config = new \Origami\Entity\Manager\Config(self::entity());
-        
-        // Gestinnaire de query
-        $this->_query = new \Origami\Entity\Manager\Query($this->_config);
-
-        // Gestionnaire de stockage
-        $this->_storage = new \Origami\Entity\Manager\Storage($this->_config);
-
-        // Gestionnaire d'association
-        $this->_association = new \Origami\Entity\Manager\Association($this->_config, $this->_storage);
-
-        // Gestionnaire de validation
-        $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
-        
-        // Si c'est une nouvelle instance
-        $this->_storage->isNew($options['new']);
-
-        // Si la variable $data est un entier, c'est une clé primaire
-        if (is_numeric($data)) {
-            // Récupère l'objet grêce à la clé primaire
-            $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
-
-            // Si l'objet est trouvé
-            if ($object instanceof \Origami\Entity) {
-                // Indique que ce n'est pas une nouvelle instance
-                $this->_storage->isNew(FALSE);
-                
-                // Insère les donnée en silence
-                $this->_storage->set($object->toArray(), NULL, TRUE);
-            }
-
-            // Si la variable $data est une instance \Origami\Entity\Shema\Association
-        } else if ($data instanceof \Origami\Entity\Shema\Association) {
-            $this->_query->setAssociation($data);
-
-            // Si la variable $data est un tableau
-        } else if (is_array($data) && !empty($data)) {
-            $this->_storage->set($data, NULL, $options['silence']);
-        }
-        
+        $this->initialize($data, $options);
     }
 
     /**
@@ -248,6 +202,11 @@ class Entity
      */
     public function __set($name, $value)
     {
+        // // Si l'entité n'est pas initialisé (Ex: mysqli_fetch_object)
+        if (!$this->_config instanceof \Origami\Entity\Manager\Config) {
+            $this->initialize();
+        }
+
         $this->_storage->set($name, $value);
     }
 
@@ -277,6 +236,66 @@ class Entity
         }
     }
     
+    /**
+     * Initialisateur
+     * @param NULL|integer|\Origami\Entity\Schema\Association $data
+     * @param array $options
+     */
+    private function initialize($data = NULL, $options = array())
+    {
+        // Si l'entité est déjà initialisé (Ex: mysqli_fetch_object)
+        if ($this->_config instanceof \Origami\Entity\Manager\Config) {
+            return;
+        }
+
+        // Options
+        $options = array_merge(array(
+            'new' => TRUE,
+            'silence' => FALSE
+        ), $options);
+
+        // Gestinnaire de configuation
+        $this->_config = new \Origami\Entity\Manager\Config(self::entity());
+
+        // Gestinnaire de query
+        $this->_query = new \Origami\Entity\Manager\Query($this->_config);
+
+        // Gestionnaire de stockage
+        $this->_storage = new \Origami\Entity\Manager\Storage($this->_config);
+
+        // Gestionnaire d'association
+        $this->_association = new \Origami\Entity\Manager\Association($this->_config, $this->_storage);
+
+        // Gestionnaire de validation
+        $this->_validator = new \Origami\Entity\Manager\Validator($this->_config, $this->_storage);
+
+        // Si c'est une nouvelle instance
+        $this->_storage->isNew($options['new']);
+
+        // Si la variable $data est un entier, c'est une clé primaire
+        if (is_numeric($data)) {
+            // Récupère l'objet grêce à la clé primaire
+            $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
+
+            // Si l'objet est trouvé
+            if ($object instanceof \Origami\Entity) {
+                // Indique que ce n'est pas une nouvelle instance
+                $this->_storage->isNew(FALSE);
+
+                // Insère les donnée en silence
+                $this->_storage->set($object->toArray(), NULL, TRUE);
+            }
+
+            // Si la variable $data est une instance \Origami\Entity\Shema\Association
+        } else if ($data instanceof \Origami\Entity\Shema\Association) {
+            $this->_query->setAssociation($data);
+
+            // Si la variable $data est un tableau
+        } else if (is_array($data) && !empty($data)) {
+            $this->_storage->set($data, NULL, $options['silence']);
+        }
+    }
+
     /**
      * Retourne les résultats dans un tableau associatif
      * @param string $index
