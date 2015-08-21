@@ -60,12 +60,70 @@ class Query
 
         return $this;
     }
+    
+    /**
+     * Starts a query group
+     * @param string $not (Internal use only)
+	 * @param string $type (Internal use only)
+     * @return Origami\Entity\Manager\Query
+     */
+    public function group_start($not = '', $type = 'AND ')
+	{
+        \Origami\DB::get($this->config->getDataBase())->group_start($not, $type);
+        
+        return $this;
+    }
+    
+    /**
+     * Starts a query group, but ORs the group
+     * @return Origami\Entity\Manager\Query
+     */
+    public function or_group_start()
+	{
+        \Origami\DB::get($this->config->getDataBase())->or_group_start();
+        
+        return $this;
+    }
+    
+    /**
+     * Starts a query group, but NOTs the group
+     * @return Origami\Entity\Manager\Query
+     */
+    public function not_group_start()
+	{
+        \Origami\DB::get($this->config->getDataBase())->not_group_start();
+        
+        return $this;
+    }
+    
+    /**
+     * Starts a query group, but OR NOTs the group
+     * @return Origami\Entity\Manager\Query
+     */
+    public function or_not_group_start()
+	{
+        \Origami\DB::get($this->config->getDataBase())->or_not_group_start();
+        
+        return $this;
+    }
+    
+    /**
+     * Ends a query group
+     * @return Origami\Entity\Manager\Query
+     */
+    public function group_end()
+	{
+        \Origami\DB::get($this->config->getDataBase())->group_end();
+        
+        return $this;
+    }
 	
     /**
      * Créer un WHERE en SQL
      * @param mixe $key
      * @param NULL|string|int|float $value
      * @param boolean $escape
+     * @return Origami\Entity\Manager\Query
      */
     public function where($key, $value = NULL, $escape = TRUE)
     {
