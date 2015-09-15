@@ -539,29 +539,36 @@ class Entity
 
         // Si il y a des champs modifiés
         if (!empty($fields)) {
+            // Si le cryptage est activé et si il y a un champ vecteur
+            if ($this->_config->getOrigami('encryption_enable') && $this->_storage->get('vector') !== FALSE) {
+                // Récupération du champ vecteur
+                $vector = $this->_storage->get('vector');
+                $value = $vector->getValue();
+
+                // Si le vecteur n'a pas de valeur
+                if (empty($value)) {
+                    // Créer un vecteur
+                    $this->_storage->set('vector', random_string('unique'));
+
+                    // Recharge l'object le vecteur
+                    $vector = $this->_storage->get('vector');
+
+                    // Prépare l'insertion vecteur
+                    $this->db()->set($vector->getName(), $vector->getValue(), TRUE);
+                }
+            }
+
+            // Parcours les champs modifiés
             foreach ($fields as $field) {
                 // Si le cryptage est activé et qu'il y a des champs crypté
                 if ($this->_config->getOrigami('encryption_enable') && $field->getEncrypt()) {
                     // Récupération du champ vecteur
                     $vector = $this->_storage->get('vector');
-                    $value = $vector->getValue();
-
-                    // Si le vecteur n'a pas de valeur
-                    if (empty($value)) {
-                        // Créer un vecteur
-                        $this->_storage->set('vector', random_string('unique'));
-
-                        // Recharge l'object le vecteur
-                        $vector = $this->_storage->get('vector');
-
-                        // Prépare l'insertion vecteur
-                        $this->db()->set($vector->getName(), $vector->getValue(), TRUE);
-                    }
 
                     // Encryptage de la valeur
                     $this->db()->set("`{$field->getName()}`", "TO_BASE64(AES_ENCRYPT('{$this->db()->escape_str($field->getValue())}', UNHEX('{$this->_config->getOrigami('encryption_key')}'), UNHEX('{$vector->getValue()}')))", FALSE);
 
-                    // Si le champ est un binaire 
+                    // Si le champ est un binaire
                 } else if ($this->_config->getOrigami('binary_enable') && $field->getBinary()) {
 
                     // Transformation de la valeur
