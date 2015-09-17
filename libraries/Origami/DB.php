@@ -15,21 +15,24 @@ class DB
 	public static function link($name)
 	{
 		$CI =& get_instance();
-		
+
 		if (!isset($CI->{"db_$name"})) {
 			$CI->{"db_$name"} = $CI->load->database($name, TRUE);
 			$CI->{"db_$name"}->initialize();
-			$CI->{"db_$name"}->query("SET @@session.block_encryption_mode = 'aes-256-cbc';");
+
+            if ($CI->orimami->getConfig('encryption_enable')) {
+                $CI->{"db_$name"}->query("SET @@session.block_encryption_mode = 'aes-256-cbc';");
+            }
 		}
-		
+
 		return $CI->{"db_$name"};
 	}
-	
+
 	public static function get($name)
 	{
 		return self::link($name);
 	}
-	
+
 }
 
 /* End of file Database.php */
