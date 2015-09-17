@@ -20,7 +20,7 @@ class DB
 			$CI->{"db_$name"} = $CI->load->database($name, TRUE);
 			$CI->{"db_$name"}->initialize();
 
-            if ($CI->orimami->getConfig('encryption_enable')) {
+            if ($CI->origami->getConfig('encryption_enable')) {
                 $CI->{"db_$name"}->query("SET @@session.block_encryption_mode = 'aes-256-cbc';");
             }
 		}
