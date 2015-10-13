@@ -79,18 +79,18 @@ class Entity
 	 * @return \Origami\Entity\Manager\Query
 	 */
 	public static function __callStatic($name, $arguments = array()) {
-		        
+
         $config = new \Origami\Entity\Manager\Config(self::entity());
-       
+
 		// Si c'est une requête
 		if (method_exists('\Origami\Entity\Manager\Query', $name)) {
-			
+
 			$query = new \Origami\Entity\Manager\Query($config);
-			
+
 			return call_user_func_array(array($query, $name), $arguments);
 		}
 	}
-	
+
 	/**
      * Configuration général
      * @return array
@@ -379,19 +379,6 @@ class Entity
     public function isValid()
     {
         return $this->_validator->is_valid();
-    }
-    
-    /**
-     * Jointure avec une entité
-     * @param \Origami\Entity $entity
-     * @param string|null $cond
-     * @param string|null $type
-     * @param string|null $escape
-     * @return \Origami\Entity\Manager\Query
-     */
-    public function join($entity, $cond = NULL, $type = NULL, $escape = NULL)
-    {
-        return $this->_query->join($entity, $cond, $type, $escape);
     }
 
     /**
