@@ -1,6 +1,6 @@
 <?php
 
-namespace Origami\Entity\Manager;
+namespace Origami\Entity\Pluggin;
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -10,8 +10,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link https://github.com/maltyxx/origami
  */
-class Config
+class Config extends PlugginInterface
 {
+    /**
+     * Nom du pluggin
+     * @var string
+     */
+    private $_name = 'config';
+    
+    /**
+     * Object entité
+     * @var \Origami\Entity\Core\Entity
+     */
+	private $_entity;
+    
     /**
      * Configuration Générale
      * @var array 
@@ -71,39 +83,56 @@ class Config
      * @var array 
      */
     private $validations = array();
-
+    
     /**
-     * Contructeur
-     * @param array $config
-     * @param \Origami\Entity $entity
+     * Initalisateur
      */
-    public function __construct($entity)
-    {
+    public function initialize() {
         // Configuration générale
-        $this->setOrigami($entity);
+        $this->setOrigami($this->_entity);
 
         // Configuration de la classe
-        $this->setClass($entity);
+        $this->setClass($this->_entity);
 
         // Configuration de la base de donnée
-        $this->setDatabase($entity);
+        $this->setDatabase($this->_entity);
 
         // Configuration de la table
-        $this->setTable($entity);
+        $this->setTable($this->_entity);
 
         // Configuration de la la clé primaire
-        $this->setPrimaryKey($entity);
+        $this->setPrimaryKey($this->_entity);
 
         // Configuration des champs
-        $this->setField($entity);
+        $this->setField($this->_entity);
 
         // Configuration des associations
-        $this->setAssociation($entity);
+        $this->setAssociation($this->_entity);
 
         // Configuration des validateurs
-        $this->setValidation($entity);
+        $this->setValidation($this->_entity);
     }
-
+    
+    /**
+     * Transfère l'entité
+     * @param \Origami\Entity\Manager\Origami\Entity\Core\EntityInterface $entity
+     */
+    public function setEntity(Origami\Entity\Core\EntityInterface $entity) {
+        // Récupère l'entité
+        $this->_entity =& $entity;
+        
+        // Initialise le pluggin
+        $this->initialize();
+    }
+    
+    /**
+     * Retourne le nom du pluggin
+     * @return string
+     */
+    public function getName() {
+        return $this->_name;
+    }
+    
     /**
      * Retourne la configuration générale
      * @param type $index
