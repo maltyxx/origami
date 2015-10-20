@@ -23,7 +23,7 @@ class Storage implements PlugginInterface
      * @var \Origami\Entity\Core\Entity
      */
 	private $_entity;
-        
+    
     /**
      * Liste des champs
      * @var array $fields

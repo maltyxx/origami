@@ -400,7 +400,7 @@ class Entity extends Core implements EntityInterface
         // Retourne l'object
         return $this->db();
     }
-    
+
     /**
      * Ajoute un pluggin
      * @param \Origami\Pluggin\PlugginInterface $pluggin
@@ -413,7 +413,7 @@ class Entity extends Core implements EntityInterface
             $this->_pluggins[$pluggin->getName()]->setEntity($this);
         }
     }
-    
+
     /**
      * Obtient le plugging demandé
      * @param string $name

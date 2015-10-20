@@ -11,7 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link https://github.com/maltyxx/origami
  */
 class Core
-{
+{    
 	/**
      * Table
      * @var string $table
@@ -41,7 +41,7 @@ class Core
      * @var array $validations
      */
 	public static $validations = array();
-		
+    		
 	/**
 	 * Factory
 	 * @param string $name
@@ -53,9 +53,9 @@ class Core
         $config = new \Origami\Entity\Manager\Config(self::entity());
 
 		// Si c'est une requête
-		if (method_exists('\Origami\Entity\Manager\Query', $name)) {
+		if (method_exists('\Origami\Entity\Core\Finder', $name)) {
 
-			$query = new \Origami\Entity\Manager\Query($config);
+			$query = new \Origami\Entity\Core\Finder($config);
 
 			return call_user_func_array(array($query, $name), $arguments);
 		}
@@ -134,6 +134,9 @@ class Core
     {
         return static::$validations;
     }
+    
+    
+    
 }
 
 /* End of file Entity.php */
