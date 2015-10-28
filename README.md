@@ -330,7 +330,7 @@ GROUP BY field
 ```
 **having**
 ```php
-$table = \Entity\database\table
+$table = \Entity\database\table::
     ->having('table_id', 22)
     ->find();
 ```
@@ -339,7 +339,7 @@ HAVING table_id = 22
 ```
 **or_having :**
 ```php
-$table = \Entity\database\table
+$table = \Entity\database\table::
     ->having('table_id', 22)
     ->or_having('table_id', 23)
     ->find();
@@ -349,7 +349,7 @@ HAVING table_id = 22 OR table_id = 23
 ```
 **limit :**
 ```php
-$table = \Entity\database\table
+$table = \Entity\database\table::
     ->limit(30)
     ->find();
 ```
@@ -358,7 +358,7 @@ LIMIT 30
 ```
 **delete :**
 ```php
-$table = \Entity\database\table
+$table = \Entity\database\table::
     ->where('id', '5')
     ->delete($table)
 ```
