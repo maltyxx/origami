@@ -9,41 +9,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link https://github.com/maltyxx/origami
  */
 class Origami_generator extends CI_Controller {
-    
+
     private $override = array();
     private $association = array();
     private $entity_output = '';
+    private $entity_path = APPPATH.'/models/Entity';
 
     const STARTCODE2KEEP = "//--START_PERSISTANT_CODE";
     const ENDCODE2KEEP = "//--END_PERSISTANT_CODE";
-    
+
     /**
      * Contructeur
      */
     public function __construct() {
         parent::__construct();
-        
+
         // Si le script n'est pas exécuté en PHP CLI
         if (!$this->input->is_cli_request()) {
             //exit("Le script doit être exécuté en CLI (Ex: #php index.php entitygenerator index)");
         }
-        
+        // Chargement de la config Origami
+        $this->config->load('origami');
+
+        // Assignation du répértoire de génération des entités
+        $this->entity_path = (!empty($this->config->item('origami')['entity_path'])) ? $this->config->item('origami')['entity_path'] : $this->entity_path;
+
         // Paquet(s)
         $this->load->helper("text");
     }
-    
+
     /**
      * Point d'entré
      */
     public function index() {
         $this->run();
     }
-    
+
     /**
      * Configuration
      * @return array $db
      */
-    private function _config() {        
+    private function _config() {
         // Fichier de configuration des bases de données
         $file_db_env = APPPATH.'config/'.ENVIRONMENT.'/database.php';
         $file_db = APPPATH.'config/database.php';
@@ -55,7 +61,7 @@ class Origami_generator extends CI_Controller {
         // Retourne la configuration
         return $db;
     }
-    
+
     /**
      * Création d'un répertoire
      * @param string $dir
@@ -70,7 +76,7 @@ class Origami_generator extends CI_Controller {
 
         return TRUE;
     }
-    
+
     /**
      * Sauvegarde les surcharges des modèles
      */
@@ -106,7 +112,7 @@ class Origami_generator extends CI_Controller {
             }
         }
     }
-    
+
     /**
      * Génère les associations
      */
@@ -159,7 +165,7 @@ class Origami_generator extends CI_Controller {
                     if ($relation_type != "" && strtolower($relation_type) != "has_one" && empty($already_seen[$referenced_table_name][$table['Name']])) {
                         $already_seen[$referenced_table_name][$table['Name']] = TRUE;
 
-                        // STOCKAGE DES RELATION INVERSES						
+                        // STOCKAGE DES RELATION INVERSES
                         $referenced_table_name_t = strtolower($table['Name']);
                         $this->association[$referenced_table_name]['php'][] = "\t\tarray('association_key' => '$referenced_table_name_t', 'entity' => '\\Entity\\$namespace\\{$table['Name']}', 'type' => '{$relation_inverse[$relation_type]}', 'primary_key' => 'id', 'foreign_key' => '{$data["COLUMN_NAME"]}'),\r\n";
                         $this->association[$referenced_table_name]['javadoc'][] = "\t * @method \\Entity\\$namespace\\$referenced_table_name_t $referenced_table_name_t() {$relation_inverse[$relation_type]}\r\n";
@@ -170,7 +176,7 @@ class Origami_generator extends CI_Controller {
 
         echo '<hr />';
     }
-    
+
     /**
      * Création des modèles d'une base de donée
      */
@@ -189,9 +195,9 @@ class Origami_generator extends CI_Controller {
             $this->_append("\r\n");
             $this->_append("defined('BASEPATH') OR exit('No direct script access allowed');\r\n");
             $this->_append("\r\n");
-            
+
             $class_name = $table['Name'];
-            
+
             $this->_append("class $class_name extends \Origami\Entity\r\n");
             $this->_append("{\r\n");
 
@@ -225,7 +231,7 @@ class Origami_generator extends CI_Controller {
                     }
                 }
             }
-            
+
             $this->_append("\r\n");
             $this->_append("\tpublic static \$table = '{$table['Name']}';\r\n");
             $this->_append("\r\n");
@@ -411,7 +417,7 @@ class Origami_generator extends CI_Controller {
                 $this->_append($relations_javadoc_buffer);
                 $this->_append($relations_buffer);
             }
-                        
+
             $file_name = $table['Name'].'.php';
 
             // Si il exite un override
@@ -421,9 +427,9 @@ class Origami_generator extends CI_Controller {
 
             $this->_append('}'."\r\n");
             $this->_append("\r\n");
-               
-            $file_path = APPPATH.'/models/Entity/'.$namespace.'/'.$file_name;
-            
+
+            $file_path = $this->entity_path.'/'.$namespace.'/'.$file_name;
+
             if (touch($file_path)) {
                 file_put_contents($file_path, $this->entity_output);
                 chmod($file_path, 0644);
@@ -440,7 +446,7 @@ class Origami_generator extends CI_Controller {
         echo '<hr />';
         echo '<h2>DONE ;)</h2>';
     }
-    
+
     /**
      * Exécute le script
      */
@@ -449,13 +455,13 @@ class Origami_generator extends CI_Controller {
 
         foreach ($config as $namespace => $db) {
             echo "<h1>Base de donnée <strong>$namespace</strong></h1><br />";
-                        
+
             // Création du répertoire
-            $this->_dir(APPPATH.'models/Entity/'.$namespace);
+            $this->_dir($this->entity_path.'/'.$namespace);
 
             // Récupère les données des anciens modèles
-            $this->_save_override(APPPATH.'models/Entity/'.$namespace.'/*');
-            
+            $this->_save_override($this->entity_path.'/'.$namespace.'/*');
+
             // Stock la nouvelle connexion à la base de donnée
             $this->{"db_$namespace"} = $this->load->database($namespace, TRUE);
 
@@ -469,7 +475,7 @@ class Origami_generator extends CI_Controller {
             $this->output->enable_profiler(TRUE);
         }
     }
-    
+
     /**
      * Contenu d'un modèle
      * @param string $output
@@ -477,7 +483,7 @@ class Origami_generator extends CI_Controller {
     private function _append($output) {
         $this->entity_output .= $output;
     }
-    
+
     /**
      * Génère le nom d'une constante
      * @param string $chaine
