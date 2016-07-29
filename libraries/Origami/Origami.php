@@ -32,7 +32,7 @@ class Origami
      * Version
      * @var string $version
      */
-    private $version = '1.0.1';
+    private $version = '1.0.2';
 
     /**
      * Configuration de l'ORM
