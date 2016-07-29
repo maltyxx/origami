@@ -3,7 +3,7 @@ Object Relational Mapping for Codeigniter 3
 
 ## Requirements
 
-- PHP 5.4.x (Composer requirement)
+- PHP 5.3.x (Composer requirement)
 - CodeIgniter 3.0.x
 
 ## Installation
