@@ -117,7 +117,8 @@ class Entity
      */
     public static function database()
     {
-        return explode('\\', self::entity())[1];
+        $database = explode('\\', self::entity());
+        return $database[1];
     }
 	
 	/**

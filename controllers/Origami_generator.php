@@ -13,7 +13,7 @@ class Origami_generator extends CI_Controller {
     private $override = array();
     private $association = array();
     private $entity_output = '';
-    private $entity_path = APPPATH.'/models/Entity';
+    private $entity_path;
 
     const STARTCODE2KEEP = "//--START_PERSISTANT_CODE";
     const ENDCODE2KEEP = "//--END_PERSISTANT_CODE";
@@ -33,7 +33,7 @@ class Origami_generator extends CI_Controller {
         $config_origami = $this->config->item('origami');
 
         // Assignation du répértoire de génération des entités
-        $this->entity_path = (!empty($config_origami['entity_path'])) ? $config_origami['entity_path'] : $this->entity_path;
+        $this->entity_path = (!empty($config_origami['entity_path'])) ? $config_origami['entity_path'] : APPPATH.'/models/Entity';
 
         // Paquet(s)
         $this->load->helper("text");
