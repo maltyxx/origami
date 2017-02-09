@@ -2,7 +2,7 @@
 
 namespace Origami;
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * Origami ORM (objet relationnel mapping)
@@ -12,42 +12,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Entity
 {
-	/**
+    /**
      * Table
      * @var string $table
      */
-	public static $table;
-	
+    public static $table;
+
     /**
      * Clé primaire
      * @var string $primary_key
      */
-	public static $primary_key;
-	
+    public static $primary_key;
+
     /**
      * Champs
      * @var array $fields
      */
-	public static $fields = array();
-	
+    public static $fields = array();
+
     /**
      * Associations
      * @var array $associations
      */
-	public static $associations = array();
-	
+    public static $associations = array();
+
     /**
      * Validations
      * @var array $validations
      */
-	public static $validations = array();
-	
+    public static $validations = array();
+
     /**
      * Gestionnaire de configuration
-     * @var \Origami\Entity\Manager\Config 
+     * @var \Origami\Entity\Manager\Config
      */
     protected $_config;
-    
+
     /**
      * Gestionnaire de requête
      * @var \Origami\Entity\Manager\Query
@@ -71,38 +71,38 @@ class Entity
      * @var \Origami\Entity\Manager\Validator
      */
     protected $_validator;
-	
-	/**
-	 * Factory
-	 * @param string $name
-	 * @param array $arguments
-	 * @return \Origami\Entity\Manager\Query
-	 */
-	public static function __callStatic($name, $arguments = array()) {
+
+    /**
+     * Factory
+     * @param string $name
+     * @param array $arguments
+     * @return \Origami\Entity\Manager\Query
+     */
+    public static function __callStatic($name, $arguments = array())
+    {
 
         $config = new \Origami\Entity\Manager\Config(self::entity());
 
-		// Si c'est une requête
-		if (method_exists('\Origami\Entity\Manager\Query', $name)) {
+        // Si c'est une requête
+        if (method_exists('\Origami\Entity\Manager\Query', $name)) {
+            $query = new \Origami\Entity\Manager\Query($config);
 
-			$query = new \Origami\Entity\Manager\Query($config);
+            return call_user_func_array(array($query, $name), $arguments);
+        }
+    }
 
-			return call_user_func_array(array($query, $name), $arguments);
-		}
-	}
-
-	/**
+    /**
      * Configuration général
      * @return array
      */
-	public static function origami()
+    public static function origami()
     {
         $CI =& get_instance();
-		
-		return (isset($CI->origami) && $CI->origami instanceof \Origami) ? $CI->origami->getConfig() : array();
+
+        return (isset($CI->origami) && $CI->origami instanceof \Origami) ? $CI->origami->getConfig() : array();
     }
-	
-	/**
+
+    /**
      * Nom de la classe
      * @return string
      */
@@ -120,8 +120,8 @@ class Entity
         $database = explode('\\', self::entity());
         return $database[1];
     }
-	
-	/**
+
+    /**
      * Nom de la table
      * @return string
      */
@@ -171,7 +171,7 @@ class Entity
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
      * @param array $options
      */
-    function __construct($data = NULL, $options = array())
+    function __construct($data = null, $options = array())
     {
         $this->initialize($data, $options);
     }
@@ -183,7 +183,7 @@ class Entity
      */
     public function __isset($name)
     {
-        return ($this->_storage->value($name) !== FALSE);
+        return ($this->_storage->value($name) !== false);
     }
 
     /**
@@ -220,7 +220,7 @@ class Entity
     public function __call($name, $arguments = array())
     {
         // Si il sagit d'une relation
-        if (($association = $this->_association->get($name)) !== FALSE) {
+        if (($association = $this->_association->get($name)) !== false) {
             // Créer une association
             $instance = $association->associated();
 
@@ -237,13 +237,13 @@ class Entity
             exit($error.PHP_EOL);
         }
     }
-    
+
     /**
      * Initialisateur
      * @param NULL|integer|\Origami\Entity\Schema\Association $data
      * @param array $options
      */
-    private function initialize($data = NULL, $options = array())
+    private function initialize($data = null, $options = array())
     {
         // Si l'entité est déjà initialisé (Ex: mysqli_fetch_object)
         if ($this->_config instanceof \Origami\Entity\Manager\Config) {
@@ -252,8 +252,8 @@ class Entity
 
         // Options
         $options = array_merge(array(
-            'new' => TRUE,
-            'silence' => FALSE
+            'new' => true,
+            'silence' => false
         ), $options);
 
         // Gestinnaire de configuation
@@ -277,24 +277,25 @@ class Entity
         // Si la variable $data est un entier, c'est une clé primaire
         if (is_numeric($data)) {
             // Récupère l'objet grêce à la clé primaire
-            $object = $this->_query->setPrimaryKey(new \Origami\Entity\Shema\Primarykey($this->_config), $data)->find_one();
+            $primary = new \Origami\Entity\Shema\Primarykey($this->_config);
+            $object = $this->_query->setPrimaryKey($primary, $data)->find_one();
 
             // Si l'objet est trouvé
             if ($object instanceof \Origami\Entity) {
                 // Indique que ce n'est pas une nouvelle instance
-                $this->_storage->isNew(FALSE);
+                $this->_storage->isNew(false);
 
                 // Insère les donnée en silence
-                $this->_storage->set($object->toArray(), NULL, TRUE);
+                $this->_storage->set($object->toArray(), null, true);
             }
 
             // Si la variable $data est une instance \Origami\Entity\Shema\Association
-        } else if ($data instanceof \Origami\Entity\Shema\Association) {
+        } elseif ($data instanceof \Origami\Entity\Shema\Association) {
             $this->_query->setAssociation($data);
 
             // Si la variable $data est un tableau
-        } else if (is_array($data) && !empty($data)) {
-            $this->_storage->set($data, NULL, $options['silence']);
+        } elseif (is_array($data) && !empty($data)) {
+            $this->_storage->set($data, null, $options['silence']);
         }
     }
 
@@ -303,7 +304,7 @@ class Entity
      * @param string $index
      * @return array
      */
-    public function get($index = NULL)
+    public function get($index = null)
     {
         return $this->_storage->value($index);
     }
@@ -314,7 +315,8 @@ class Entity
      * @param type $value
      * @param boolean $silence
      */
-    public function set($index, $value = NULL, $silence = FALSE) {
+    public function set($index, $value = null, $silence = false)
+    {
         $this->_storage->set($index, $value, $silence);
     }
 
@@ -337,7 +339,7 @@ class Entity
     {
         return json_encode($this->_storage->value());
     }
-    
+
     /**
      * Retourne le gestionnaire de configuration
      * @return Entity\Config
@@ -388,7 +390,7 @@ class Entity
      * @param type $index
      * @return boolean
      */
-    public function dirty($index = NULL, $force = FALSE)
+    public function dirty($index = null, $force = false)
     {
         return $this->_storage->dirty($index, $force);
     }
@@ -397,7 +399,7 @@ class Entity
      * Efface les champs modifiés
      * @return boolean
      */
-    public function clean($index = NULL)
+    public function clean($index = null)
     {
         return $this->_storage->clean($index);
     }
@@ -406,7 +408,7 @@ class Entity
      * Vérifie si une entité a été Sauvegardée
      * @return boolean
      */
-    public function isNew($force = NULL)
+    public function isNew($force = null)
     {
         return $this->_storage->isNew($force);
     }
@@ -420,24 +422,24 @@ class Entity
     {
         // Options
         $options = array_merge(array(
-            'replace' => FALSE,
-            'force_insert' => FALSE
+            'replace' => false,
+            'force_insert' => false
         ), $options);
-        
+
         // Clé primaire
         $field = $this->_storage->get($this->_config->getPrimaryKey());
         $field_value = $field->getValue();
 
         // Si la la requête doit être de type INSERT
-        $has_insert = (empty($field_value) || $options['force_insert'] === TRUE);
-        
+        $has_insert = (empty($field_value) || $options['force_insert'] === true);
+
         // Si il y a pas de changement
-        if ($this->_storage->dirty() === FALSE) {
-            return FALSE;
+        if ($this->_storage->dirty() === false) {
+            return false;
         }
 
         // Etat de la requête
-        $query = FALSE;
+        $query = false;
 
         // Si la requete est de type replace
         if ($options['replace']) {
@@ -448,13 +450,13 @@ class Entity
                 ->replace();
 
             // Si l'insertion est correcte
-            if ($query === TRUE) {
+            if ($query === true) {
                 // Met a jour la clé primaire en silence
-                $this->_storage->set($field->getName(), $this->db()->insert_id(), TRUE);
+                $this->_storage->set($field->getName(), $this->db()->insert_id(), true);
             }
 
             // Si la requete est de type insert
-        } else if ($has_insert === TRUE) {
+        } elseif ($has_insert === true) {
             // Exécute la requête
             $query = $this
                 ->write()
@@ -462,9 +464,9 @@ class Entity
                 ->insert();
 
             // Si l'insertion est correcte
-            if ($query === TRUE) {
+            if ($query === true) {
                 // Met a jour la clé primaire en silence
-                $this->_storage->set($field->getName(), $this->db()->insert_id(), TRUE);
+                $this->_storage->set($field->getName(), $this->db()->insert_id(), true);
             }
 
             // Si la requete est de type update
@@ -476,10 +478,10 @@ class Entity
                 ->where($field->getName(), $field->getValue())
                 ->update();
         }
-        
+
         // Change le status de l'entité
-        if ($query === TRUE && $this->_storage->isNew()) {
-            $this->_storage->isNew(FALSE);
+        if ($query === true && $this->_storage->isNew()) {
+            $this->_storage->isNew(false);
         }
 
         // Vide les changements
@@ -500,7 +502,7 @@ class Entity
 
         // Si la valeur est vide
         if (empty($value)) {
-            return FALSE;
+            return false;
         }
 
         // Exécute la requête
@@ -508,7 +510,7 @@ class Entity
             ->where($field->getName(), $value)
             ->delete($this->_config->getTable());
     }
-    
+
     /**
      * Retourne l'object db
      * @return type
@@ -524,12 +526,12 @@ class Entity
     private function write()
     {
         // Liste des champs modifiés
-        $fields = $this->_storage->get(NULL, TRUE);
+        $fields = $this->_storage->get(null, true);
 
         // Si il y a des champs modifiés
         if (!empty($fields)) {
             // Si le cryptage est activé et si il y a un champ vecteur
-            if ($this->_config->getOrigami('encryption_enable') && $this->_storage->get('vector') !== FALSE) {
+            if ($this->_config->getOrigami('encryption_enable') && $this->_storage->get('vector') !== false) {
                 // Récupération du champ vecteur
                 $vector = $this->_storage->get('vector');
                 $value = $vector->getValue();
@@ -543,7 +545,7 @@ class Entity
                     $vector = $this->_storage->get('vector');
 
                     // Prépare l'insertion vecteur
-                    $this->db()->set($vector->getName(), $vector->getValue(), TRUE);
+                    $this->db()->set($vector->getName(), $vector->getValue(), true);
                 }
             }
 
@@ -555,24 +557,22 @@ class Entity
                     $vector = $this->_storage->get('vector');
 
                     // Encryptage de la valeur
-                    $this->db()->set("`{$field->getName()}`", "TO_BASE64(AES_ENCRYPT('{$this->db()->escape_str($field->getValue())}', UNHEX('{$this->_config->getOrigami('encryption_key')}'), UNHEX('{$vector->getValue()}')))", FALSE);
+                    $this->db()->set("`{$field->getName()}`", "TO_BASE64(AES_ENCRYPT('{$this->db()->escape_str($field->getValue())}', UNHEX('{$this->_config->getOrigami('encryption_key')}'), UNHEX('{$vector->getValue()}')))", false);
 
                     // Si le champ est un binaire
-                } else if ($this->_config->getOrigami('binary_enable') && $field->getBinary()) {
-
+                } elseif ($this->_config->getOrigami('binary_enable') && $field->getBinary()) {
                     // Transformation de la valeur
-                    $this->db()->set("`{$field->getName()}`", "FROM_BASE64('{$this->db()->escape_str($field->getValue())}')", FALSE);
+                    $this->db()->set("`{$field->getName()}`", "FROM_BASE64('{$this->db()->escape_str($field->getValue())}')", false);
 
                     // Si c'est un champ normal
                 } else {
-                    $this->db()->set($field->getName(), $field->getValue(), TRUE);
+                    $this->db()->set($field->getName(), $field->getValue(), true);
                 }
             }
         }
 
         return $this->db();
     }
-
 }
 
 /* End of file Entity.php */
